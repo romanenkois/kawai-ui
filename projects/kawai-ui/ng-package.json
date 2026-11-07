@@ -3,5 +3,6 @@
   "dest": "../../dist/kawai-ui",
   "lib": {
     "entryFile": "src/public-api.ts"
-  }
+  },
+  "assets": [{ "input": "styles", "glob": "**/*.css", "output": "styles" }]
 }

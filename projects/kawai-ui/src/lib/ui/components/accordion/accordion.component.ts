@@ -1,14 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  TemplateRef,
-  contentChild,
-  input,
-  output,
-} from '@angular/core';
+import { Component, TemplateRef, contentChild, input, output } from '@angular/core';
 
-import { TooltipDirective } from '../tooltip/tooltip.directive';
+import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
 
 export type AccordionOverflow = 'hidden' | 'scroll';
 
@@ -19,9 +12,8 @@ let nextId = 0;
  * to `toggled`. The body is the `ng-template` passed as content, rendered only while expanded.
  */
 @Component({
-  selector: 'app-accordion',
+  selector: 'kawai-accordion',
   imports: [NgTemplateOutlet, TooltipDirective],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { role: 'region', '[attr.aria-labelledby]': 'headingId' },
   templateUrl: './accordion.component.html',
   styleUrl: './accordion.component.scss',
@@ -34,6 +26,6 @@ export class AccordionComponent {
   readonly toggled = output<void>();
 
   protected readonly body = contentChild.required(TemplateRef);
-  protected readonly headingId = `accordion-${nextId}-heading`;
-  protected readonly bodyId = `accordion-${nextId++}-body`;
+  protected readonly headingId = `kawai-accordion-${nextId}-heading`;
+  protected readonly bodyId = `kawai-accordion-${nextId++}-body`;
 }

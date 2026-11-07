@@ -6,7 +6,9 @@
     (click)="toggled.emit()"
   >
     <span class="chevron" aria-hidden="true">{{ expanded() ? '▾' : '▸' }}</span>
-    <span class="label" [appTooltip]="heading()" tooltipOnlyWhenTruncated>{{ heading() }}</span>
+    <span class="label" [kawaiTooltip]="heading()" kawaiTooltipOnlyWhenTruncated>{{
+      heading()
+    }}</span>
   </button>
 </h2>
 <div class="body" [class.scroll]="overflow() === 'scroll'" [id]="bodyId" [hidden]="!expanded()">

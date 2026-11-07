@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 export interface SegmentedOption<T extends string> {
   value: T;
@@ -12,26 +12,27 @@ let nextId = 0;
  * move the selection. Stateless: the parent owns `value` and reacts to `valueChange`.
  */
 @Component({
-  selector: 'app-segmented-control',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'kawai-segmented-control',
   templateUrl: './segmented-control.component.html',
   styles: `
     :host {
       display: grid;
       grid-template-columns: fit-content(50%) minmax(0, 1fr);
-      gap: 0 0.75rem;
+      gap: 0 var(--kawai-comp-segmented-control-gap, var(--kawai-sys-space-lg));
       align-items: center;
+      font-family: var(--kawai-sys-font-family);
     }
 
     .label {
-      color: var(--color-text-muted);
+      color: var(--kawai-comp-segmented-control-label-color, var(--kawai-sys-color-text-muted));
     }
 
     .options {
       display: flex;
       min-inline-size: 0;
-      border: 1px solid var(--color-border);
-      border-radius: 0.25rem;
+      border: var(--kawai-sys-border-width) solid
+        var(--kawai-comp-segmented-control-border-color, var(--kawai-sys-color-border));
+      border-radius: var(--kawai-comp-segmented-control-radius, var(--kawai-sys-radius-sm));
     }
 
     label {
@@ -41,7 +42,8 @@ let nextId = 0;
     }
 
     label + label {
-      border-inline-start: 1px solid var(--color-border);
+      border-inline-start: var(--kawai-sys-border-width) solid
+        var(--kawai-comp-segmented-control-border-color, var(--kawai-sys-color-border));
     }
 
     /* The native radio stays focusable and announced; the span is what is seen. */
@@ -55,27 +57,40 @@ let nextId = 0;
 
     .options span {
       display: block;
-      padding: 0 0.5rem;
+      padding: var(--kawai-comp-segmented-control-option-padding, 0 var(--kawai-sys-space-md));
       overflow: hidden;
       text-align: center;
       text-overflow: ellipsis;
       white-space: nowrap;
-      color: var(--color-primary);
+      color: var(--kawai-comp-segmented-control-option-color, var(--kawai-sys-color-primary));
     }
 
     label:hover span {
-      background: var(--color-surface-hover);
-      color: var(--color-primary-hover);
+      background: var(
+        --kawai-comp-segmented-control-option-background-hover,
+        var(--kawai-sys-color-surface-hover)
+      );
+      color: var(
+        --kawai-comp-segmented-control-option-color-hover,
+        var(--kawai-sys-color-primary-hover)
+      );
     }
 
     input:checked + span {
-      background: var(--color-surface-hover);
-      color: var(--color-text);
-      font-weight: 700;
+      background: var(
+        --kawai-comp-segmented-control-option-background-checked,
+        var(--kawai-sys-color-surface-hover)
+      );
+      color: var(--kawai-comp-segmented-control-option-color-checked, var(--kawai-sys-color-text));
+      font-weight: var(
+        --kawai-comp-segmented-control-option-font-weight-checked,
+        var(--kawai-sys-font-weight-bold)
+      );
     }
 
     input:focus-visible + span {
-      outline: 2px solid var(--color-primary);
+      outline: var(--kawai-sys-focus-ring-width) solid
+        var(--kawai-comp-segmented-control-focus-ring-color, var(--kawai-sys-color-primary));
       outline-offset: 1px;
     }
   `,
@@ -86,6 +101,6 @@ export class SegmentedControlComponent<T extends string> {
   readonly value = input.required<T>();
   readonly valueChange = output<T>();
 
-  protected readonly labelId = `segmented-${nextId}-label`;
-  protected readonly name = `segmented-${nextId++}`;
+  protected readonly labelId = `kawai-segmented-control-${nextId}-label`;
+  protected readonly name = `kawai-segmented-control-${nextId++}`;
 }

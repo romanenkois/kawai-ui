@@ -1,0 +1,128 @@
+/*
+ * kawai-ui theme: design tokens and the built-in light and dark themes.
+ *
+ * Import once in the app, before the app's own styles. Everything sits in `@layer kawai`,
+ * so any unlayered app rule overrides it regardless of selector specificity or order.
+ *
+ * Token tiers (the prefix keeps them from colliding):
+ *   --kawai-ref-*   raw values, one set per mode. Override these at :root to restyle a mode.
+ *   --kawai-sys-*   semantic tokens that components read. Themes map them to ref tokens.
+ *   --kawai-comp-*  per-component tokens. Not declared here: each component falls back to
+ *                   sys tokens, so set one only to change that component.
+ *
+ * Theme selection belongs to the app. Set `kawai-theme` on <html> or any element:
+ *   (none) light, never reads the OS setting
+ *   light | dark   that mode, also sets `color-scheme`
+ *   auto           follows the OS `prefers-color-scheme`
+ * Components assume they sit on --kawai-sys-color-surface; contrast is checked against it.
+ */
+
+@layer kawai {
+  :root {
+    /* ref: light palette */
+    --kawai-ref-light-surface: #ffffff;
+    --kawai-ref-light-surface-hover: #eef1f4;
+    --kawai-ref-light-surface-raised: #ffffff;
+    --kawai-ref-light-text: #1f2328;
+    --kawai-ref-light-text-muted: #57606a;
+    --kawai-ref-light-primary: #0a58b8;
+    --kawai-ref-light-primary-hover: #08458f;
+    --kawai-ref-light-secondary: #3e5068;
+    --kawai-ref-light-border: #808a95;
+    --kawai-ref-light-shadow: rgb(0 0 0 / 0.16);
+
+    /* ref: dark palette */
+    --kawai-ref-dark-surface: #1b1e23;
+    --kawai-ref-dark-surface-hover: #2a2f37;
+    --kawai-ref-dark-surface-raised: #2c3139;
+    --kawai-ref-dark-text: #e6e9ed;
+    --kawai-ref-dark-text-muted: #a3abb5;
+    --kawai-ref-dark-primary: #79b8ff;
+    --kawai-ref-dark-primary-hover: #a8d1ff;
+    --kawai-ref-dark-secondary: #b9c4d4;
+    --kawai-ref-dark-border: #6f7885;
+    --kawai-ref-dark-shadow: rgb(0 0 0 / 0.5);
+
+    /*
+     * sys: typography. `--kawai-sys-font-family` is deliberately not declared, so components
+     * inherit the app's font. Set it to a font stack to give the library its own font.
+     */
+    --kawai-sys-font-size-sm: 0.75rem;
+    --kawai-sys-font-size-md: 0.875rem;
+    --kawai-sys-font-size-lg: 1rem;
+    --kawai-sys-line-height-tight: 1.4;
+    --kawai-sys-line-height-normal: 1.5;
+    --kawai-sys-font-weight-regular: 400;
+    --kawai-sys-font-weight-bold: 700;
+
+    /* sys: spacing, shape, stacking */
+    --kawai-sys-space-2xs: 0.125rem;
+    --kawai-sys-space-xs: 0.25rem;
+    --kawai-sys-space-sm: 0.375rem;
+    --kawai-sys-space-md: 0.5rem;
+    --kawai-sys-space-lg: 0.75rem;
+    --kawai-sys-space-xl: 1rem;
+    --kawai-sys-radius-sm: 0.25rem;
+    --kawai-sys-radius-md: 0.375rem;
+    --kawai-sys-border-width: 1px;
+    --kawai-sys-focus-ring-width: 2px;
+    --kawai-sys-z-tooltip: 1000;
+  }
+
+  /* sys colors: light. The default, and the base for `auto` (so it resets inside a dark subtree). */
+  :root,
+  [kawai-theme='light'],
+  [kawai-theme='auto'] {
+    --kawai-sys-color-surface: var(--kawai-ref-light-surface);
+    --kawai-sys-color-surface-hover: var(--kawai-ref-light-surface-hover);
+    --kawai-sys-color-surface-raised: var(--kawai-ref-light-surface-raised);
+    --kawai-sys-color-text: var(--kawai-ref-light-text);
+    --kawai-sys-color-text-muted: var(--kawai-ref-light-text-muted);
+    --kawai-sys-color-primary: var(--kawai-ref-light-primary);
+    --kawai-sys-color-primary-hover: var(--kawai-ref-light-primary-hover);
+    --kawai-sys-color-secondary: var(--kawai-ref-light-secondary);
+    --kawai-sys-color-border: var(--kawai-ref-light-border);
+    --kawai-sys-color-shadow: var(--kawai-ref-light-shadow);
+    --kawai-sys-shadow-raised: 0 2px 8px var(--kawai-sys-color-shadow);
+  }
+
+  [kawai-theme='light'] {
+    color-scheme: light;
+  }
+
+  [kawai-theme='auto'] {
+    color-scheme: light dark;
+  }
+
+  /* sys colors: dark. Kept in sync with the `auto` copy in the media query below. */
+  [kawai-theme='dark'] {
+    color-scheme: dark;
+    --kawai-sys-color-surface: var(--kawai-ref-dark-surface);
+    --kawai-sys-color-surface-hover: var(--kawai-ref-dark-surface-hover);
+    --kawai-sys-color-surface-raised: var(--kawai-ref-dark-surface-raised);
+    --kawai-sys-color-text: var(--kawai-ref-dark-text);
+    --kawai-sys-color-text-muted: var(--kawai-ref-dark-text-muted);
+    --kawai-sys-color-primary: var(--kawai-ref-dark-primary);
+    --kawai-sys-color-primary-hover: var(--kawai-ref-dark-primary-hover);
+    --kawai-sys-color-secondary: var(--kawai-ref-dark-secondary);
+    --kawai-sys-color-border: var(--kawai-ref-dark-border);
+    --kawai-sys-color-shadow: var(--kawai-ref-dark-shadow);
+    --kawai-sys-shadow-raised: 0 2px 8px var(--kawai-sys-color-shadow);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    [kawai-theme='auto'] {
+      --kawai-sys-color-surface: var(--kawai-ref-dark-surface);
+      --kawai-sys-color-surface-hover: var(--kawai-ref-dark-surface-hover);
+      --kawai-sys-color-surface-raised: var(--kawai-ref-dark-surface-raised);
+      --kawai-sys-color-text: var(--kawai-ref-dark-text);
+      --kawai-sys-color-text-muted: var(--kawai-ref-dark-text-muted);
+      --kawai-sys-color-primary: var(--kawai-ref-dark-primary);
+      --kawai-sys-color-primary-hover: var(--kawai-ref-dark-primary-hover);
+      --kawai-sys-color-secondary: var(--kawai-ref-dark-secondary);
+      --kawai-sys-color-border: var(--kawai-ref-dark-border);
+      --kawai-sys-color-shadow: var(--kawai-ref-dark-shadow);
+      --kawai-sys-shadow-raised: 0 2px 8px var(--kawai-sys-color-shadow);
+    }
+  }
+}

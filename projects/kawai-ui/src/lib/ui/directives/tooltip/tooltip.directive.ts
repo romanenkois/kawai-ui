@@ -1,6 +1,8 @@
 import { DOCUMENT } from '@angular/common';
 import { DestroyRef, Directive, ElementRef, booleanAttribute, inject, input } from '@angular/core';
 
+import { KAWAI_THEME_ATTRIBUTE } from '../../../theme/tokens';
+
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 
 const OPPOSITE: Record<TooltipPosition, TooltipPosition> = {
@@ -16,16 +18,19 @@ let nextId = 0;
 
 /**
  * Plain-text tooltip shown on hover and keyboard focus, hidden on leave, blur, Escape and scroll.
- * Placed on `tooltipPosition` (bottom by default) and flipped to the opposite side when it
+ * Placed on `kawaiTooltipPosition` (bottom by default) and flipped to the opposite side when it
  * would leave the viewport.
  *
- * With `tooltipOnlyWhenTruncated`, it only opens when the host's own content is clipped
+ * With `kawaiTooltipOnlyWhenTruncated`, it only opens when the host's own content is clipped
  * (`scrollWidth > clientWidth`), checked at the moment it would open. The host must be the
  * element that clips, e.g. with `overflow: hidden; text-overflow: ellipsis`. Such a tooltip
  * repeats text already in the DOM, so it is not linked through `aria-describedby`.
+ *
+ * The tooltip is appended to <body>, so it copies the host's nearest `kawai-theme` value to
+ * match the themed subtree it came from.
  */
 @Directive({
-  selector: '[appTooltip]',
+  selector: '[kawaiTooltip]',
   host: {
     '(mouseenter)': 'show()',
     '(focusin)': 'show()',
@@ -35,17 +40,17 @@ let nextId = 0;
   },
 })
 export class TooltipDirective {
-  readonly text = input.required<string>({ alias: 'appTooltip' });
-  readonly position = input<TooltipPosition>('bottom', { alias: 'tooltipPosition' });
+  readonly text = input.required<string>({ alias: 'kawaiTooltip' });
+  readonly position = input<TooltipPosition>('bottom', { alias: 'kawaiTooltipPosition' });
   /** Only open when the host's content is truncated. Off by default, so nothing is measured. */
   readonly onlyWhenTruncated = input(false, {
-    alias: 'tooltipOnlyWhenTruncated',
+    alias: 'kawaiTooltipOnlyWhenTruncated',
     transform: booleanAttribute,
   });
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly document = inject(DOCUMENT);
-  private readonly id = `tooltip-${nextId++}`;
+  private readonly id = `kawai-tooltip-${nextId++}`;
   private tooltip?: HTMLElement;
   /** Scroll events do not bubble, so any scrolling ancestor is caught in the capture phase. */
   private readonly onScroll = (): void => this.hide();
@@ -65,17 +70,22 @@ export class TooltipDirective {
     tooltip.id = this.id;
     tooltip.setAttribute('role', 'tooltip');
     tooltip.textContent = text;
+    const theme = host.closest(`[${KAWAI_THEME_ATTRIBUTE}]`)?.getAttribute(KAWAI_THEME_ATTRIBUTE);
+    if (theme) tooltip.setAttribute(KAWAI_THEME_ATTRIBUTE, theme);
     Object.assign(tooltip.style, {
       position: 'fixed',
-      zIndex: '1000',
+      zIndex: 'var(--kawai-sys-z-tooltip)',
       maxInlineSize: 'min(24rem, calc(100vw - 1rem))',
-      padding: '0.25rem 0.5rem',
-      borderRadius: '0.25rem',
-      background: 'var(--color-surface-raised)',
-      color: 'var(--color-text)',
-      font: '0.75rem/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+      padding:
+        'var(--kawai-comp-tooltip-padding, var(--kawai-sys-space-xs) var(--kawai-sys-space-md))',
+      borderRadius: 'var(--kawai-comp-tooltip-radius, var(--kawai-sys-radius-sm))',
+      background: 'var(--kawai-comp-tooltip-background, var(--kawai-sys-color-surface-raised))',
+      color: 'var(--kawai-comp-tooltip-color, var(--kawai-sys-color-text))',
+      fontFamily: 'var(--kawai-sys-font-family)',
+      fontSize: 'var(--kawai-comp-tooltip-font-size, var(--kawai-sys-font-size-sm))',
+      lineHeight: 'var(--kawai-sys-line-height-tight)',
       overflowWrap: 'anywhere',
-      boxShadow: '0 2px 8px var(--color-shadow)',
+      boxShadow: 'var(--kawai-comp-tooltip-shadow, var(--kawai-sys-shadow-raised))',
       pointerEvents: 'none',
     });
     this.document.body.appendChild(tooltip);

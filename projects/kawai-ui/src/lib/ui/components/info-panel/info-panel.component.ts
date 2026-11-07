@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
-import { TooltipDirective } from '../tooltip/tooltip.directive';
+import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
 import { InfoItem, InfoLink } from './info-panel.model';
 
 /**
@@ -8,14 +8,14 @@ import { InfoItem, InfoLink } from './info-panel.model';
  * All text truncates to one line and shows its full value in a tooltip when cut off.
  */
 @Component({
-  selector: 'app-info-panel',
+  selector: 'kawai-info-panel',
   imports: [TooltipDirective],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './info-panel.component.html',
   styles: `
     :host {
       display: block;
       min-inline-size: 0;
+      font-family: var(--kawai-sys-font-family);
     }
 
     /* Every text container truncates to one line; the tooltip shows the full text. */
@@ -33,10 +33,10 @@ import { InfoItem, InfoLink } from './info-panel.model';
     }
 
     h3 {
-      margin: 0.5rem 0 0.25rem;
+      margin: var(--kawai-sys-space-md) 0 var(--kawai-sys-space-xs);
       font: inherit;
-      font-weight: 700;
-      color: var(--color-secondary);
+      font-weight: var(--kawai-sys-font-weight-bold);
+      color: var(--kawai-comp-info-panel-title-color, var(--kawai-sys-color-secondary));
     }
 
     h3:first-child {
@@ -44,22 +44,22 @@ import { InfoItem, InfoLink } from './info-panel.model';
     }
 
     p {
-      margin: 0.25rem 0 0;
+      margin: var(--kawai-sys-space-xs) 0 0;
     }
 
     .muted {
-      color: var(--color-text-muted);
+      color: var(--kawai-comp-info-panel-note-color, var(--kawai-sys-color-text-muted));
     }
 
     dl {
       display: grid;
       grid-template-columns: fit-content(50%) minmax(0, 1fr);
-      gap: 0 0.75rem;
+      gap: 0 var(--kawai-comp-info-panel-field-gap, var(--kawai-sys-space-lg));
       margin: 0;
     }
 
     dt {
-      color: var(--color-text-muted);
+      color: var(--kawai-comp-info-panel-label-color, var(--kawai-sys-color-text-muted));
     }
 
     dd {
@@ -69,7 +69,7 @@ import { InfoItem, InfoLink } from './info-panel.model';
     dd.links {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.125rem 0.25rem;
+      gap: var(--kawai-sys-space-2xs) var(--kawai-sys-space-xs);
       white-space: normal;
     }
 
@@ -91,7 +91,7 @@ import { InfoItem, InfoLink } from './info-panel.model';
 
     th,
     td {
-      padding: 0 0.375rem;
+      padding: 0 var(--kawai-comp-info-panel-cell-padding, var(--kawai-sys-space-sm));
       text-align: end;
     }
 
@@ -101,35 +101,42 @@ import { InfoItem, InfoLink } from './info-panel.model';
     }
 
     thead th {
-      color: var(--color-text-muted);
-      font-weight: 400;
-      border-block-end: 1px solid var(--color-border);
+      color: var(--kawai-comp-info-panel-label-color, var(--kawai-sys-color-text-muted));
+      font-weight: var(--kawai-sys-font-weight-regular);
+      border-block-end: var(--kawai-sys-border-width) solid
+        var(--kawai-comp-info-panel-divider-color, var(--kawai-sys-color-border));
     }
 
     tfoot th,
     tfoot td {
-      border-block-start: 1px solid var(--color-border);
-      font-weight: 700;
+      border-block-start: var(--kawai-sys-border-width) solid
+        var(--kawai-comp-info-panel-divider-color, var(--kawai-sys-color-border));
+      font-weight: var(--kawai-sys-font-weight-bold);
     }
 
     button {
       max-inline-size: 100%;
-      padding: 0 0.25rem;
-      border: 1px solid var(--color-border);
-      border-radius: 0.25rem;
+      padding: var(--kawai-comp-info-panel-button-padding, 0 var(--kawai-sys-space-xs));
+      border: var(--kawai-sys-border-width) solid
+        var(--kawai-comp-info-panel-button-border-color, var(--kawai-sys-color-border));
+      border-radius: var(--kawai-comp-info-panel-button-radius, var(--kawai-sys-radius-sm));
       background: none;
-      color: var(--color-primary);
+      color: var(--kawai-comp-info-panel-button-color, var(--kawai-sys-color-primary));
       font: inherit;
       cursor: pointer;
     }
 
     button:hover {
-      background: var(--color-surface-hover);
-      color: var(--color-primary-hover);
+      background: var(
+        --kawai-comp-info-panel-button-background-hover,
+        var(--kawai-sys-color-surface-hover)
+      );
+      color: var(--kawai-comp-info-panel-button-color-hover, var(--kawai-sys-color-primary-hover));
     }
 
     button:focus-visible {
-      outline: 2px solid var(--color-primary);
+      outline: var(--kawai-sys-focus-ring-width) solid
+        var(--kawai-comp-info-panel-focus-ring-color, var(--kawai-sys-color-primary));
       outline-offset: 1px;
     }
   `,

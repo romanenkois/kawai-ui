@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 let nextId = 0;
 
@@ -9,19 +9,19 @@ let nextId = 0;
  * The buttons use `aria-disabled` at the bounds so they keep focus while clicking.
  */
 @Component({
-  selector: 'app-number-stepper',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'kawai-number-stepper',
   templateUrl: './number-stepper.component.html',
   styles: `
     :host {
       display: grid;
       grid-template-columns: fit-content(50%) minmax(0, 1fr);
-      gap: 0 0.75rem;
+      gap: 0 var(--kawai-comp-number-stepper-gap, var(--kawai-sys-space-lg));
       align-items: center;
+      font-family: var(--kawai-sys-font-family);
     }
 
     label {
-      color: var(--color-text-muted);
+      color: var(--kawai-comp-number-stepper-label-color, var(--kawai-sys-color-text-muted));
     }
 
     .stepper {
@@ -33,7 +33,8 @@ let nextId = 0;
     button {
       box-sizing: border-box;
       margin: 0;
-      border: 1px solid var(--color-border);
+      border: var(--kawai-sys-border-width) solid
+        var(--kawai-comp-number-stepper-border-color, var(--kawai-sys-color-border));
       background: none;
       font: inherit;
     }
@@ -41,9 +42,9 @@ let nextId = 0;
     input {
       flex: 1 1 0;
       min-inline-size: 0;
-      padding: 0 0.25rem;
+      padding: var(--kawai-comp-number-stepper-input-padding, 0 var(--kawai-sys-space-xs));
       border-inline-width: 0;
-      color: var(--color-text);
+      color: var(--kawai-comp-number-stepper-input-color, var(--kawai-sys-color-text));
       text-align: center;
       font-variant-numeric: tabular-nums;
       appearance: textfield;
@@ -57,32 +58,47 @@ let nextId = 0;
 
     button {
       flex: none;
-      padding: 0 0.5rem;
-      color: var(--color-primary);
+      padding: var(--kawai-comp-number-stepper-button-padding, 0 var(--kawai-sys-space-md));
+      color: var(--kawai-comp-number-stepper-button-color, var(--kawai-sys-color-primary));
       cursor: pointer;
     }
 
     button:first-child {
-      border-radius: 0.25rem 0 0 0.25rem;
+      border-start-start-radius: var(
+        --kawai-comp-number-stepper-radius,
+        var(--kawai-sys-radius-sm)
+      );
+      border-end-start-radius: var(--kawai-comp-number-stepper-radius, var(--kawai-sys-radius-sm));
     }
 
     button:last-child {
-      border-radius: 0 0.25rem 0.25rem 0;
+      border-start-end-radius: var(--kawai-comp-number-stepper-radius, var(--kawai-sys-radius-sm));
+      border-end-end-radius: var(--kawai-comp-number-stepper-radius, var(--kawai-sys-radius-sm));
     }
 
     button:hover:not([aria-disabled='true']) {
-      background: var(--color-surface-hover);
-      color: var(--color-primary-hover);
+      background: var(
+        --kawai-comp-number-stepper-button-background-hover,
+        var(--kawai-sys-color-surface-hover)
+      );
+      color: var(
+        --kawai-comp-number-stepper-button-color-hover,
+        var(--kawai-sys-color-primary-hover)
+      );
     }
 
     button[aria-disabled='true'] {
-      color: var(--color-text-muted);
+      color: var(
+        --kawai-comp-number-stepper-button-color-disabled,
+        var(--kawai-sys-color-text-muted)
+      );
       cursor: default;
     }
 
     input:focus-visible,
     button:focus-visible {
-      outline: 2px solid var(--color-primary);
+      outline: var(--kawai-sys-focus-ring-width) solid
+        var(--kawai-comp-number-stepper-focus-ring-color, var(--kawai-sys-color-primary));
       outline-offset: 1px;
     }
   `,
@@ -94,7 +110,7 @@ export class NumberStepperComponent {
   readonly max = input.required<number>();
   readonly valueChange = output<number>();
 
-  protected readonly inputId = `number-stepper-${nextId++}`;
+  protected readonly inputId = `kawai-number-stepper-${nextId++}`;
 
   protected step(delta: number): void {
     this.commit(this.value() + delta);
