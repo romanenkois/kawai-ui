@@ -1,5 +1,9 @@
 You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
 
+# Agent mode
+
+User is always here, always ask about anything that is not 100% clear, never just assume, ask as much question as needed to clarify all the potential cases of the dispatched work
+
 ## TypeScript Best Practices
 
 - Use strict type checking
