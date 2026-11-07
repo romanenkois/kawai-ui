@@ -6,6 +6,9 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
+    "paths": {
+      "kawai-ui": ["./dist/kawai-ui"]
+    },
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "isolatedModules": true,
@@ -19,5 +22,13 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true
   },
-  "files": []
+  "files": [],
+  "references": [
+    {
+      "path": "./projects/kawai-ui/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/kawai-ui/tsconfig.spec.json"
+    }
+  ]
 }
