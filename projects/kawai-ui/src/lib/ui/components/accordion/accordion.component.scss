@@ -1,0 +1,57 @@
+:host {
+  display: block;
+  inline-size: 100%;
+  box-sizing: border-box;
+  border-radius: 0.375rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font:
+    0.75rem/1.5 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
+  pointer-events: auto;
+}
+
+h2 {
+  margin: 0;
+  font: inherit;
+}
+
+button {
+  display: flex;
+  gap: 0.5rem;
+  inline-size: 100%;
+  padding: 0.375rem 0.75rem;
+  border: 0;
+  border-radius: inherit;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-align: start;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.label {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.body {
+  padding: 0 0.75rem 0.5rem;
+  overflow: hidden;
+}
+
+.body.scroll {
+  overflow: auto;
+}

@@ -1,0 +1,33 @@
+<label [for]="inputId">{{ label() }}</label>
+<div class="stepper">
+  <button
+    type="button"
+    [attr.aria-label]="'Decrease ' + label()"
+    [attr.aria-controls]="inputId"
+    [attr.aria-disabled]="value() <= min()"
+    (click)="step(-1)"
+  >
+    −
+  </button>
+  <input
+    #field
+    type="number"
+    inputmode="numeric"
+    step="1"
+    [id]="inputId"
+    [min]="min()"
+    [max]="max()"
+    [value]="value()"
+    (input)="typed(field)"
+    (blur)="restore(field)"
+  />
+  <button
+    type="button"
+    [attr.aria-label]="'Increase ' + label()"
+    [attr.aria-controls]="inputId"
+    [attr.aria-disabled]="value() >= max()"
+    (click)="step(1)"
+  >
+    +
+  </button>
+</div>

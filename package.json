@@ -1,9 +1,19 @@
 {
   "name": "kawai-ui",
-  "private": true,
   "version": "0.0.0",
+  "private": false,
+  "description": "An angular ui library",
+  "keywords": [
+    "angular",
+    "ui library",
+    "component",
+    "components"
+  ],
   "packageManager": "npm@11.19.0",
   "license": "Apache-2.0",
+  "repository": {
+    "url": "https://github.com/romanenkois/kawai-ui"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

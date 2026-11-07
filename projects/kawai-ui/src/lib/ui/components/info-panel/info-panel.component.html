@@ -1,0 +1,75 @@
+@for (item of items(); track $index) {
+  @switch (item.type) {
+    @case ('title') {
+      <h3 [appTooltip]="item.text" tooltipOnlyWhenTruncated>{{ item.text }}</h3>
+    }
+    @case ('simple-text') {
+      <p [class.muted]="item.muted" [appTooltip]="item.text" tooltipOnlyWhenTruncated>
+        {{ item.text }}
+      </p>
+    }
+    @case ('fields') {
+      <dl>
+        @for (field of item.fields; track field.label) {
+          <dt [appTooltip]="field.label" tooltipOnlyWhenTruncated>{{ field.label }}</dt>
+          @if (field.links?.length) {
+            <dd class="links" [class.scroll]="field.linksOverflow === 'scroll'">
+              @for (link of field.links; track link.value) {
+                <button type="button" (click)="linkClicked.emit(link)">{{ link.text }}</button>
+              }
+            </dd>
+          } @else {
+            <dd [appTooltip]="field.value ?? ''" tooltipOnlyWhenTruncated>{{ field.value }}</dd>
+          }
+        }
+      </dl>
+    }
+    @case ('table') {
+      <table>
+        <thead>
+          <tr>
+            @for (column of item.columns; track $index) {
+              <th scope="col" [appTooltip]="column" tooltipOnlyWhenTruncated>{{ column }}</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of item.rows; track $index) {
+            <tr>
+              <th scope="row" [appTooltip]="row.header" tooltipOnlyWhenTruncated>
+                {{ row.header }}
+              </th>
+              @for (cell of row.cells; track $index) {
+                <td [appTooltip]="cell" tooltipOnlyWhenTruncated>{{ cell }}</td>
+              }
+            </tr>
+          }
+        </tbody>
+        @if (item.footer; as footer) {
+          <tfoot>
+            <tr>
+              <th scope="row" [appTooltip]="footer.header" tooltipOnlyWhenTruncated>
+                {{ footer.header }}
+              </th>
+              @for (cell of footer.cells; track $index) {
+                <td [appTooltip]="cell" tooltipOnlyWhenTruncated>{{ cell }}</td>
+              }
+            </tr>
+          </tfoot>
+        }
+      </table>
+    }
+    @case ('button') {
+      <p>
+        <button
+          type="button"
+          [appTooltip]="item.link.text"
+          tooltipOnlyWhenTruncated
+          (click)="linkClicked.emit(item.link)"
+        >
+          {{ item.link.text }}
+        </button>
+      </p>
+    }
+  }
+}

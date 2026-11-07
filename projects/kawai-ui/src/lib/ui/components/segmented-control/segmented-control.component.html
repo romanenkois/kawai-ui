@@ -1,0 +1,15 @@
+<span class="label" [id]="labelId">{{ label() }}</span>
+<div class="options" role="radiogroup" [attr.aria-labelledby]="labelId">
+  @for (option of options(); track option.value) {
+    <label>
+      <input
+        type="radio"
+        [name]="name"
+        [value]="option.value"
+        [checked]="option.value === value()"
+        (change)="valueChange.emit(option.value)"
+      />
+      <span>{{ option.label }}</span>
+    </label>
+  }
+</div>
