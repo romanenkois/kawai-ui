@@ -69,6 +69,12 @@
     --kawai-sys-border-width: 1px;
     --kawai-sys-focus-ring-width: 2px;
     --kawai-sys-z-tooltip: 1000;
+
+    /* sys: motion. Components switch transitions off under prefers-reduced-motion. */
+    --kawai-sys-motion-duration-sm: 120ms;
+    --kawai-sys-motion-duration-md: 200ms;
+    --kawai-sys-motion-duration-lg: 300ms;
+    --kawai-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
   }
 
   /* sys colors: light. The default, and the base for `auto` (so it resets inside a dark subtree). */

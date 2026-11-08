@@ -1,17 +1,17 @@
 @for (item of items(); track $index) {
   @switch (item.type) {
     @case ('title') {
-      <h3 [kawaiTooltip]="item.text" kawaiTooltipOnlyWhenTruncated>{{ item.text }}</h3>
+      <h3 [kawaiTooltip]="{ text: item.text, onlyWhenTruncated: true }">{{ item.text }}</h3>
     }
     @case ('simple-text') {
-      <p [class.muted]="item.muted" [kawaiTooltip]="item.text" kawaiTooltipOnlyWhenTruncated>
+      <p [class.muted]="item.muted" [kawaiTooltip]="{ text: item.text, onlyWhenTruncated: true }">
         {{ item.text }}
       </p>
     }
     @case ('fields') {
       <dl>
         @for (field of item.fields; track field.label) {
-          <dt [kawaiTooltip]="field.label" kawaiTooltipOnlyWhenTruncated>{{ field.label }}</dt>
+          <dt [kawaiTooltip]="{ text: field.label, onlyWhenTruncated: true }">{{ field.label }}</dt>
           @if (field.links?.length) {
             <dd class="links" [class.scroll]="field.linksOverflow === 'scroll'">
               @for (link of field.links; track link.value) {
@@ -19,7 +19,7 @@
               }
             </dd>
           } @else {
-            <dd [kawaiTooltip]="field.value ?? ''" kawaiTooltipOnlyWhenTruncated>
+            <dd [kawaiTooltip]="{ text: field.value ?? '', onlyWhenTruncated: true }">
               {{ field.value }}
             </dd>
           }
@@ -31,7 +31,7 @@
         <thead>
           <tr>
             @for (column of item.columns; track $index) {
-              <th scope="col" [kawaiTooltip]="column" kawaiTooltipOnlyWhenTruncated>
+              <th scope="col" [kawaiTooltip]="{ text: column, onlyWhenTruncated: true }">
                 {{ column }}
               </th>
             }
@@ -40,11 +40,11 @@
         <tbody>
           @for (row of item.rows; track $index) {
             <tr>
-              <th scope="row" [kawaiTooltip]="row.header" kawaiTooltipOnlyWhenTruncated>
+              <th scope="row" [kawaiTooltip]="{ text: row.header, onlyWhenTruncated: true }">
                 {{ row.header }}
               </th>
               @for (cell of row.cells; track $index) {
-                <td [kawaiTooltip]="cell" kawaiTooltipOnlyWhenTruncated>{{ cell }}</td>
+                <td [kawaiTooltip]="{ text: cell, onlyWhenTruncated: true }">{{ cell }}</td>
               }
             </tr>
           }
@@ -52,11 +52,11 @@
         @if (item.footer; as footer) {
           <tfoot>
             <tr>
-              <th scope="row" [kawaiTooltip]="footer.header" kawaiTooltipOnlyWhenTruncated>
+              <th scope="row" [kawaiTooltip]="{ text: footer.header, onlyWhenTruncated: true }">
                 {{ footer.header }}
               </th>
               @for (cell of footer.cells; track $index) {
-                <td [kawaiTooltip]="cell" kawaiTooltipOnlyWhenTruncated>{{ cell }}</td>
+                <td [kawaiTooltip]="{ text: cell, onlyWhenTruncated: true }">{{ cell }}</td>
               }
             </tr>
           </tfoot>
@@ -67,8 +67,7 @@
       <p>
         <button
           type="button"
-          [kawaiTooltip]="item.link.text"
-          kawaiTooltipOnlyWhenTruncated
+          [kawaiTooltip]="{ text: item.link.text, onlyWhenTruncated: true }"
           (click)="linkClicked.emit(item.link)"
         >
           {{ item.link.text }}

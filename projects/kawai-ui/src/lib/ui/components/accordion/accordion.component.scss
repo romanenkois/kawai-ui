@@ -1,9 +1,16 @@
+$duration: var(--kawai-comp-accordion-motion-duration, var(--kawai-sys-motion-duration-md));
+$easing: var(--kawai-comp-accordion-motion-easing, var(--kawai-sys-motion-easing-standard));
+$radius: var(--kawai-comp-accordion-radius, var(--kawai-sys-radius-sm));
+$background: var(--kawai-comp-accordion-background, var(--kawai-sys-color-surface));
+$border: var(--kawai-comp-accordion-border-width, var(--kawai-sys-border-width)) solid
+  var(--kawai-comp-accordion-border-color, var(--kawai-sys-color-border));
+
 :host {
   display: block;
   inline-size: 100%;
   box-sizing: border-box;
-  border-radius: var(--kawai-comp-accordion-radius, var(--kawai-sys-radius-md));
-  background: var(--kawai-comp-accordion-background, var(--kawai-sys-color-surface));
+  border-radius: $radius;
+  background: $background;
   color: var(--kawai-comp-accordion-color, var(--kawai-sys-color-text));
   font-family: var(--kawai-sys-font-family);
   font-size: var(--kawai-comp-accordion-font-size, var(--kawai-sys-font-size-sm));
@@ -13,11 +20,58 @@
 
 h2 {
   margin: 0;
+  border-radius: inherit;
   font: inherit;
+}
+
+/* Attached (default): one box; the line between header and body sits on the body's top edge,
+   so it collapses with the body. */
+:host(.bordered:not(.separated)) {
+  border: $border;
+}
+
+:host(.bordered:not(.separated)) .body {
+  border-block-start: $border;
+}
+
+/* Separated: header and body are their own boxes with a gap, which collapses with the body. */
+:host(.separated) {
+  background: none;
+}
+
+:host(.separated) h2,
+:host(.separated) .body {
+  box-sizing: border-box;
+  border-radius: $radius;
+  background: $background;
+}
+
+:host(.separated.bordered) h2,
+:host(.separated.bordered) .body {
+  border: $border;
+}
+
+:host(.separated) h2 {
+  transition: border-radius $duration $easing;
+}
+
+:host(.separated) .body {
+  margin-block-start: var(--kawai-comp-accordion-body-gap, var(--kawai-sys-space-md));
+}
+
+:host(.separated.square-inner.expanded) h2 {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+
+:host(.separated.square-inner) .body {
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
 }
 
 button {
   display: flex;
+  align-items: center;
   gap: var(--kawai-comp-accordion-header-gap, var(--kawai-sys-space-md));
   inline-size: 100%;
   padding: var(
@@ -36,17 +90,74 @@ button {
   overflow: hidden;
 }
 
+button:focus-visible {
+  outline: var(--kawai-sys-focus-ring-width) solid
+    var(--kawai-comp-accordion-focus-ring-color, var(--kawai-sys-color-primary));
+  outline-offset: calc(-1 * var(--kawai-sys-focus-ring-width));
+}
+
 .label {
+  flex: 1 1 auto;
   min-inline-size: 0;
+}
+
+.label.truncate {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-button:focus-visible {
-  outline: var(--kawai-sys-focus-ring-width) solid
-    var(--kawai-comp-accordion-focus-ring-color, var(--kawai-sys-color-primary));
-  outline-offset: calc(-1 * var(--kawai-sys-focus-ring-width));
+/* The chevron is decorative (state is in aria-expanded), so moving it with `order` is safe. */
+.indicator {
+  display: inline-flex;
+  flex: none;
+  color: var(--kawai-comp-accordion-indicator-color, currentColor);
+  transition: rotate $duration $easing;
+}
+
+.indicator-start .indicator {
+  order: -1;
+}
+
+.indicator.rotate.expanded {
+  rotate: 180deg;
+}
+
+.indicator svg {
+  inline-size: var(--kawai-comp-accordion-indicator-size, 1em);
+  block-size: var(--kawai-comp-accordion-indicator-size, 1em);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/*
+ * Height animation: the grid row goes from 0fr to 1fr, which animates to the content's real
+ * height. Visibility flips at the end of collapsing (and at the start of expanding), so the
+ * collapsed body is hidden from screen readers and skipped by Tab.
+ */
+.panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows $duration $easing,
+    visibility 0s linear $duration;
+}
+
+.panel.expanded {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition:
+    grid-template-rows $duration $easing,
+    visibility 0s;
+}
+
+.clip {
+  min-block-size: 0;
+  overflow: hidden;
 }
 
 .body {
@@ -60,4 +171,13 @@ button:focus-visible {
 
 .body.scroll {
   overflow: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .panel.expanded,
+  .indicator,
+  :host(.separated) h2 {
+    transition: none;
+  }
 }

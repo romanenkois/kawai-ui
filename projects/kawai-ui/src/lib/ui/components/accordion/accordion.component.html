@@ -1,18 +1,58 @@
 <h2 [id]="headingId">
   <button
     type="button"
+    [class.indicator-start]="indicatorOptions()?.position === 'start'"
     [attr.aria-expanded]="expanded()"
     [attr.aria-controls]="bodyId"
+    [attr.aria-label]="buttonLabel()"
     (click)="toggled.emit()"
   >
-    <span class="chevron" aria-hidden="true">{{ expanded() ? '▾' : '▸' }}</span>
-    <span class="label" [kawaiTooltip]="heading()" kawaiTooltipOnlyWhenTruncated>{{
-      heading()
-    }}</span>
+    @if (headingTemplate(); as customHeading) {
+      <span #label class="label">
+        <ng-container
+          [ngTemplateOutlet]="customHeading.template"
+          [ngTemplateOutletContext]="context()"
+        />
+      </span>
+    } @else {
+      <span
+        #label
+        class="label"
+        [class.truncate]="headingOptions().truncate"
+        [kawaiTooltip]="labelTooltip()"
+        >{{ headingOptions().text }}</span
+      >
+    }
+    @if (indicatorOptions(); as resolvedIndicator) {
+      <span
+        class="indicator"
+        aria-hidden="true"
+        [class.rotate]="resolvedIndicator.rotate"
+        [class.expanded]="expanded()"
+      >
+        @if (indicatorTemplate(); as customIndicator) {
+          <ng-container
+            [ngTemplateOutlet]="customIndicator.template"
+            [ngTemplateOutletContext]="context()"
+          />
+        } @else {
+          <svg viewBox="0 0 16 16" focusable="false">
+            <path d="M4 6l4 4 4-4" />
+          </svg>
+        }
+      </span>
+    }
   </button>
 </h2>
-<div class="body" [class.scroll]="overflow() === 'scroll'" [id]="bodyId" [hidden]="!expanded()">
-  @if (expanded()) {
-    <ng-container [ngTemplateOutlet]="body()" />
-  }
+<div class="panel" [class.expanded]="expanded()">
+  <div class="clip">
+    <div class="body" [class.scroll]="overflow() === 'scroll'" [id]="bodyId">
+      @if (bodyRendered()) {
+        <ng-container
+          [ngTemplateOutlet]="bodyTemplate().template"
+          [ngTemplateOutletContext]="context()"
+        />
+      }
+    </div>
+  </div>
 </div>

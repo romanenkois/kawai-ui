@@ -45,7 +45,7 @@ Lint enforces all of these:
 - Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
 - Use the `inject()` function instead of constructor injection
 - Selectors use the `kawai` prefix: components `kawai-<kebab-case>`, directives `kawai<CamelCase>`
-- Directive inputs are aliased with the directive name: `kawaiTooltip`, `kawaiTooltipPosition`
+- A directive's main input is aliased with the directive name: `kawaiTooltip`
 - Generated element ids are prefixed `kawai-<component>-`, with a module-level counter for uniqueness
 
 ## Components
@@ -62,6 +62,28 @@ Lint enforces all of these:
 - Do NOT use `ngStyle`, use `style` bindings instead
 - Do NOT import `CommonModule`, import only the directives and pipes the template uses, such as `AsyncPipe` or `DatePipe`
 - Give every public component and directive a JSDoc comment describing its behavior and who owns its state. Storybook autodocs shows it.
+- Projected templates use marker directives on `ng-template`: `ng-template[kawai<Component><Slot>]` (e.g. `kawaiAccordionHeading`), each with a typed `ngTemplateContextGuard`. The context passes the main state as `$implicit`, so templates can use `let-expanded`.
+- Text and labels (headings, field labels, values, option labels, button text) stay on one line by default, cut off with an ellipsis, and show the full text in a `kawaiTooltip` with `onlyWhenTruncated: true`. Exceptions are free-form content (bodies, descriptions) and places where an option turns truncation off.
+
+## Options inputs
+
+When several inputs configure one thing (a label, an indicator, a tooltip), they become one input instead:
+
+```ts
+readonly heading = input<string | KawaiDeepPartial<AccordionHeadingOptions>>();
+readonly indicator = input<AccordionIndicatorPosition | KawaiDeepPartial<AccordionIndicatorOptions> | null>();
+protected readonly indicatorOptions = computed<AccordionIndicatorOptions | null>(() =>
+  resolveOptions(this.indicator(), KAWAI_ACCORDION_INDICATOR_DEFAULTS, 'position'),
+);
+```
+
+- The input accepts a shorthand (the one value usually needed, always a primitive), or a `KawaiDeepPartial<Options>` object where every field, nested ones included, may be left out.
+- Not passed means defaults. `null` means off (not rendered); allow it only where off makes sense, so a heading takes no `null` but an indicator does. Booleans stay `true`/`false` and never take `null`.
+- Resolve with `resolveOptions()` from `src/lib/utils/options.ts` inside a `computed()`, never with ad-hoc spreads. Nested plain objects merge; arrays, templates and functions replace.
+- Each options type gets a JSDoc'd interface in `<name>.model.ts` and an exported defaults constant: `KAWAI_<COMPONENT>_<GROUP>_DEFAULTS`, typed `Readonly<Options>`.
+- Only for configuration. State and events stay separate (`expanded`, `value`, `toggled`, `valueChange`), styling stays in tokens, and projected templates stay marker directives.
+- Options objects are immutable: pass a new object to change them. Mutating one in place doesn't update the component.
+- In stories, flatten options into separate controls and rebuild the object in `render`.
 
 ## State Management
 
@@ -83,7 +105,7 @@ Lint enforces all of these:
   - `--kawai-ref-<light|dark>-<role>`: raw palette, one set per mode. Declared in `kawai-theme.css` only.
   - `--kawai-sys-<category>-<name>`: semantic tokens that components read. Themes map sys colors to ref colors.
   - `--kawai-comp-<component>[-<part>]-<property>[-<state>]`: per-component overrides. Never declared in the theme CSS; components use them with a sys fallback, e.g. `var(--kawai-comp-accordion-radius, var(--kawai-sys-radius-md))`.
-- Give each themable property of a new component a comp token in that pattern. Property names come from: `color`, `background`, `border-color`, `radius`, `padding`, `gap`, `font-size`, `font-weight`, `shadow`, `focus-ring-color`. State suffixes: `hover`, `checked`, `disabled`.
+- Give each themable property of a new component a comp token in that pattern. Property names come from: `color`, `background`, `border-color`, `border-width`, `radius`, `padding`, `gap`, `size`, `font-size`, `font-weight`, `shadow`, `focus-ring-color`, `motion-duration`, `motion-easing`. State suffixes: `hover`, `checked`, `disabled`.
 - Padding gets three tokens: `-padding` (full shorthand) plus `-padding-y` and `-padding-x`, nested so the shorthand wins when set: `padding: var(--…-padding, var(--…-padding-y, <y>) var(--…-padding-x, <x>))`. Padding on one axis only exposes just that axis token (e.g. `--kawai-comp-info-panel-cell-padding-x`).
 - Add every new token to `tokens.ts`. `check:theme` fails otherwise.
 - `--kawai-sys-font-family` is deliberately undeclared, so components inherit the app font. Set `font-family: var(--kawai-sys-font-family)` on the host, never a font stack.
@@ -92,6 +114,7 @@ Lint enforces all of these:
 - Tokens in `kawai-theme.css` stay inside `@layer kawai`, so app overrides always win. Style rules there (only for elements rendered outside components, like `.kawai-tooltip`) go unlayered after the layer, so global resets in the app can't strip them.
 - Elements rendered outside the host (such as the tooltip in `<body>`) copy the nearest `kawai-theme` attribute value.
 - Use logical properties (`inline-size`, `margin-inline-start`, `border-start-start-radius`) so layouts work right to left.
+- Transitions use `--kawai-sys-motion-duration-*` and `--kawai-sys-motion-easing-*` (through comp `motion-*` tokens), and are switched off under `@media (prefers-reduced-motion: reduce)`.
 
 ## Accessibility Requirements
 

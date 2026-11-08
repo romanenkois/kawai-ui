@@ -1,9 +1,9 @@
 import { DOCUMENT } from '@angular/common';
-import { DestroyRef, Directive, ElementRef, booleanAttribute, inject, input } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, computed, inject, input } from '@angular/core';
 
 import { KAWAI_THEME_ATTRIBUTE } from '../../../theme/tokens';
-
-export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
+import { KawaiDeepPartial, resolveOptions } from '../../../utils/options';
+import { KAWAI_TOOLTIP_DEFAULTS, TooltipOptions, TooltipPosition } from './tooltip.model';
 
 const OPPOSITE: Record<TooltipPosition, TooltipPosition> = {
   top: 'bottom',
@@ -18,13 +18,9 @@ let nextId = 0;
 
 /**
  * Plain-text tooltip shown on hover and keyboard focus, hidden on leave, blur, Escape and scroll.
- * Placed on `kawaiTooltipPosition` (bottom by default) and flipped to the opposite side when it
- * would leave the viewport.
- *
- * With `kawaiTooltipOnlyWhenTruncated`, it only opens when the host's own content is clipped
- * (`scrollWidth > clientWidth`), checked at the moment it would open. The host must be the
- * element that clips, e.g. with `overflow: hidden; text-overflow: ellipsis`. Such a tooltip
- * repeats text already in the DOM, so it is not linked through `aria-describedby`.
+ * Takes the text alone (`kawaiTooltip="Save"`), or {@link TooltipOptions} for position and
+ * truncation-only mode (`[kawaiTooltip]="{ text, onlyWhenTruncated: true }"`). `null` or empty
+ * text turns it off.
  *
  * The tooltip is appended to <body>, so it copies the host's nearest `kawai-theme` value to
  * match the themed subtree it came from.
@@ -40,13 +36,12 @@ let nextId = 0;
   },
 })
 export class TooltipDirective {
-  readonly text = input.required<string>({ alias: 'kawaiTooltip' });
-  readonly position = input<TooltipPosition>('bottom', { alias: 'kawaiTooltipPosition' });
-  /** Only open when the host's content is truncated. Off by default, so nothing is measured. */
-  readonly onlyWhenTruncated = input<boolean, unknown>(false, {
-    alias: 'kawaiTooltipOnlyWhenTruncated',
-    transform: booleanAttribute,
+  readonly options = input.required<string | KawaiDeepPartial<TooltipOptions> | null>({
+    alias: 'kawaiTooltip',
   });
+  private readonly resolved = computed<TooltipOptions | null>(() =>
+    resolveOptions(this.options(), KAWAI_TOOLTIP_DEFAULTS, 'text'),
+  );
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly document = inject(DOCUMENT);
@@ -64,10 +59,10 @@ export class TooltipDirective {
   }
 
   protected show(): void {
-    const text = this.text();
-    if (this.tooltip || !text) return;
+    const options = this.resolved();
+    if (this.tooltip || !options?.text) return;
+    const { text, position, onlyWhenTruncated: truncationOnly } = options;
     const host = this.host.nativeElement;
-    const truncationOnly = this.onlyWhenTruncated();
     if (truncationOnly && host.scrollWidth <= host.clientWidth) return;
 
     const tooltip = this.document.createElement('div');
@@ -80,7 +75,7 @@ export class TooltipDirective {
     tooltip.className = 'kawai-tooltip';
     this.document.body.appendChild(tooltip);
     this.tooltip = tooltip;
-    this.place(host, tooltip);
+    this.place(host, tooltip, position);
     this.document.addEventListener('scroll', this.onScroll, { capture: true, passive: true });
     if (!truncationOnly) host.setAttribute('aria-describedby', this.id);
   }
@@ -95,7 +90,7 @@ export class TooltipDirective {
   }
 
   /** Puts the tooltip on the preferred side, flips it if that side lacks room, clamps to the viewport. */
-  private place(host: HTMLElement, tooltip: HTMLElement): void {
+  private place(host: HTMLElement, tooltip: HTMLElement, preferred: TooltipPosition): void {
     const anchor = host.getBoundingClientRect();
     const { width, height } = tooltip.getBoundingClientRect();
     const viewWidth = this.document.documentElement.clientWidth;
@@ -119,7 +114,6 @@ export class TooltipDirective {
       x + width <= viewWidth - GAP_PX &&
       y + height <= viewHeight - GAP_PX;
 
-    const preferred = this.position();
     let point = coordinates(preferred);
     if (!fits(point)) {
       const flipped = coordinates(OPPOSITE[preferred]);

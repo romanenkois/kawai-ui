@@ -69,12 +69,19 @@ export const KAWAI_SYS_TOKENS = [
   '--kawai-sys-border-width',
   '--kawai-sys-focus-ring-width',
   '--kawai-sys-z-tooltip',
+  '--kawai-sys-motion-duration-sm',
+  '--kawai-sys-motion-duration-md',
+  '--kawai-sys-motion-duration-lg',
+  '--kawai-sys-motion-easing-standard',
 ] as const;
 
 export const KAWAI_COMP_TOKENS = [
   '--kawai-comp-accordion-background',
   '--kawai-comp-accordion-color',
   '--kawai-comp-accordion-radius',
+  '--kawai-comp-accordion-border-color',
+  '--kawai-comp-accordion-border-width',
+  '--kawai-comp-accordion-body-gap',
   '--kawai-comp-accordion-font-size',
   '--kawai-comp-accordion-header-gap',
   '--kawai-comp-accordion-header-padding',
@@ -85,6 +92,10 @@ export const KAWAI_COMP_TOKENS = [
   '--kawai-comp-accordion-body-padding-y',
   '--kawai-comp-accordion-body-padding-x',
   '--kawai-comp-accordion-focus-ring-color',
+  '--kawai-comp-accordion-indicator-color',
+  '--kawai-comp-accordion-indicator-size',
+  '--kawai-comp-accordion-motion-duration',
+  '--kawai-comp-accordion-motion-easing',
 
   '--kawai-comp-info-panel-title-color',
   '--kawai-comp-info-panel-note-color',

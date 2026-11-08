@@ -1,4 +1,6 @@
 export * from './accordion/accordion.component';
+export * from './accordion/accordion-templates.directive';
+export * from './accordion/accordion.model';
 export * from './info-panel/info-panel.component';
 export * from './info-panel/info-panel.model';
 export * from './number-stepper/number-stepper.component';
