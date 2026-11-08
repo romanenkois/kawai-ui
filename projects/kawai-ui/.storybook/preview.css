@@ -1,0 +1,6 @@
+/* Components assume they sit on the kawai surface, so paint canvases and docs story blocks with it. */
+body,
+.docs-story {
+  background: var(--kawai-sys-color-surface);
+  color: var(--kawai-sys-color-text);
+}

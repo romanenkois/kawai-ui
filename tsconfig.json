@@ -29,6 +29,9 @@
     },
     {
       "path": "./projects/kawai-ui/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/kawai-ui/.storybook/tsconfig.json"
     }
   ]
 }

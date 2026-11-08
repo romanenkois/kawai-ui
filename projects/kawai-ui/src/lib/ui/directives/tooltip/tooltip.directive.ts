@@ -43,7 +43,7 @@ export class TooltipDirective {
   readonly text = input.required<string>({ alias: 'kawaiTooltip' });
   readonly position = input<TooltipPosition>('bottom', { alias: 'kawaiTooltipPosition' });
   /** Only open when the host's content is truncated. Off by default, so nothing is measured. */
-  readonly onlyWhenTruncated = input(false, {
+  readonly onlyWhenTruncated = input<boolean, unknown>(false, {
     alias: 'kawaiTooltipOnlyWhenTruncated',
     transform: booleanAttribute,
   });
@@ -53,10 +53,14 @@ export class TooltipDirective {
   private readonly id = `kawai-tooltip-${nextId++}`;
   private tooltip?: HTMLElement;
   /** Scroll events do not bubble, so any scrolling ancestor is caught in the capture phase. */
-  private readonly onScroll = (): void => this.hide();
+  private readonly onScroll = (): void => {
+    this.hide();
+  };
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => this.hide());
+    inject(DestroyRef).onDestroy(() => {
+      this.hide();
+    });
   }
 
   protected show(): void {

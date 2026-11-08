@@ -25,7 +25,7 @@ export class AccordionComponent {
   readonly overflow = input<AccordionOverflow>('hidden');
   readonly toggled = output<void>();
 
-  protected readonly body = contentChild.required(TemplateRef);
+  protected readonly body = contentChild.required<TemplateRef<unknown>>(TemplateRef);
   protected readonly headingId = `kawai-accordion-${nextId}-heading`;
   protected readonly bodyId = `kawai-accordion-${nextId++}-body`;
 }

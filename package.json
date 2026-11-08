@@ -20,7 +20,10 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "check:theme": "node scripts/check-theme.mjs"
+    "check:theme": "node scripts/check-theme.mjs",
+    "storybook": "ng run kawai-ui:storybook",
+    "build-storybook": "ng run kawai-ui:build-storybook",
+    "lint": "ng lint"
   },
   "dependencies": {
     "@angular/common": "^22.2.0",
@@ -33,13 +36,25 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@angular-devkit/build-angular": "~22.2.6",
     "@angular/build": "^22.2.6",
     "@angular/cli": "^22.2.6",
     "@angular/compiler-cli": "^22.2.0",
+    "@angular/platform-browser-dynamic": "^22.2.5",
+    "@compodoc/compodoc": "^2.0.0",
+    "@eslint/js": "^10.0.1",
+    "@storybook/addon-docs": "^10.6.6",
+    "@storybook/addon-themes": "^10.6.6",
+    "@storybook/angular": "^10.6.6",
+    "angular-eslint": "22.6.0",
+    "eslint": "^10.12.0",
+    "eslint-plugin-storybook": "^10.6.6",
     "jsdom": "^30.0.0",
     "ng-packagr": "^22.2.0",
     "prettier": "^3.8.1",
+    "storybook": "^10.6.6",
     "typescript": "~6.0.2",
+    "typescript-eslint": "8.71.0",
     "vitest": "^5.0.0"
   }
 }

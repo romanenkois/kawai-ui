@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "schematicCollections": ["angular-eslint"]
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -28,6 +29,43 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "projects/kawai-ui/tsconfig.spec.json"
+          }
+        },
+        "storybook": {
+          "builder": "@storybook/angular:start-storybook",
+          "options": {
+            "configDir": "projects/kawai-ui/.storybook",
+            "browserTarget": "kawai-ui:build",
+            "tsConfig": "projects/kawai-ui/.storybook/tsconfig.json",
+            "compodoc": true,
+            "compodocArgs": ["-e", "json", "-d", "projects/kawai-ui/.storybook"],
+            "styles": [
+              "projects/kawai-ui/styles/kawai-theme.css",
+              "projects/kawai-ui/.storybook/preview.css"
+            ],
+            "port": 6006
+          }
+        },
+        "build-storybook": {
+          "builder": "@storybook/angular:build-storybook",
+          "options": {
+            "configDir": "projects/kawai-ui/.storybook",
+            "browserTarget": "kawai-ui:build",
+            "tsConfig": "projects/kawai-ui/.storybook/tsconfig.json",
+            "compodoc": true,
+            "compodocArgs": ["-e", "json", "-d", "projects/kawai-ui/.storybook"],
+            "styles": [
+              "projects/kawai-ui/styles/kawai-theme.css",
+              "projects/kawai-ui/.storybook/preview.css"
+            ],
+            "outputDir": "dist/storybook/kawai-ui"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["projects/kawai-ui/**/*.ts", "projects/kawai-ui/**/*.html"],
+            "eslintConfig": "projects/kawai-ui/eslint.config.js"
           }
         }
       }
