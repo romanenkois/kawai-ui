@@ -56,6 +56,7 @@ Lint enforces all of these:
 - Use `computed()` for derived state
 - Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
 - Prefer inline templates for small components
+- Component styles go in `<name>.component.scss` next to the component (`styleUrl`), never in an inline `styles:` block. `ng generate component` creates the .scss by default.
 - When using external templates/styles, use paths relative to the component TS file
 - Do NOT use `ngClass`, use `class` bindings instead
 - Do NOT use `ngStyle`, use `style` bindings instead
@@ -83,11 +84,12 @@ Lint enforces all of these:
   - `--kawai-sys-<category>-<name>`: semantic tokens that components read. Themes map sys colors to ref colors.
   - `--kawai-comp-<component>[-<part>]-<property>[-<state>]`: per-component overrides. Never declared in the theme CSS; components use them with a sys fallback, e.g. `var(--kawai-comp-accordion-radius, var(--kawai-sys-radius-md))`.
 - Give each themable property of a new component a comp token in that pattern. Property names come from: `color`, `background`, `border-color`, `radius`, `padding`, `gap`, `font-size`, `font-weight`, `shadow`, `focus-ring-color`. State suffixes: `hover`, `checked`, `disabled`.
+- Padding gets three tokens: `-padding` (full shorthand) plus `-padding-y` and `-padding-x`, nested so the shorthand wins when set: `padding: var(--…-padding, var(--…-padding-y, <y>) var(--…-padding-x, <x>))`. Padding on one axis only exposes just that axis token (e.g. `--kawai-comp-info-panel-cell-padding-x`).
 - Add every new token to `tokens.ts`. `check:theme` fails otherwise.
 - `--kawai-sys-font-family` is deliberately undeclared, so components inherit the app font. Set `font-family: var(--kawai-sys-font-family)` on the host, never a font stack.
 - The library never picks a theme. Apps set `kawai-theme="light|dark|auto"`. Only `[kawai-theme='auto']` may read `prefers-color-scheme`.
 - Dark sys values appear twice in `kawai-theme.css`: in `[kawai-theme='dark']` and in the `auto` media query. Change both together.
-- Everything in `kawai-theme.css` stays inside `@layer kawai`, so app overrides always win.
+- Tokens in `kawai-theme.css` stay inside `@layer kawai`, so app overrides always win. Style rules there (only for elements rendered outside components, like `.kawai-tooltip`) go unlayered after the layer, so global resets in the app can't strip them.
 - Elements rendered outside the host (such as the tooltip in `<body>`) copy the nearest `kawai-theme` attribute value.
 - Use logical properties (`inline-size`, `margin-inline-start`, `border-start-start-radius`) so layouts work right to left.
 

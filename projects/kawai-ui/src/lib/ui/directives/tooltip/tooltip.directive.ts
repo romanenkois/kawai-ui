@@ -76,22 +76,8 @@ export class TooltipDirective {
     tooltip.textContent = text;
     const theme = host.closest(`[${KAWAI_THEME_ATTRIBUTE}]`)?.getAttribute(KAWAI_THEME_ATTRIBUTE);
     if (theme) tooltip.setAttribute(KAWAI_THEME_ATTRIBUTE, theme);
-    Object.assign(tooltip.style, {
-      position: 'fixed',
-      zIndex: 'var(--kawai-sys-z-tooltip)',
-      maxInlineSize: 'min(24rem, calc(100vw - 1rem))',
-      padding:
-        'var(--kawai-comp-tooltip-padding, var(--kawai-sys-space-xs) var(--kawai-sys-space-md))',
-      borderRadius: 'var(--kawai-comp-tooltip-radius, var(--kawai-sys-radius-sm))',
-      background: 'var(--kawai-comp-tooltip-background, var(--kawai-sys-color-surface-raised))',
-      color: 'var(--kawai-comp-tooltip-color, var(--kawai-sys-color-text))',
-      fontFamily: 'var(--kawai-sys-font-family)',
-      fontSize: 'var(--kawai-comp-tooltip-font-size, var(--kawai-sys-font-size-sm))',
-      lineHeight: 'var(--kawai-sys-line-height-tight)',
-      overflowWrap: 'anywhere',
-      boxShadow: 'var(--kawai-comp-tooltip-shadow, var(--kawai-sys-shadow-raised))',
-      pointerEvents: 'none',
-    });
+    // Styled by `.kawai-tooltip` in kawai-theme.css; only the position is set from here.
+    tooltip.className = 'kawai-tooltip';
     this.document.body.appendChild(tooltip);
     this.tooltip = tooltip;
     this.place(host, tooltip);

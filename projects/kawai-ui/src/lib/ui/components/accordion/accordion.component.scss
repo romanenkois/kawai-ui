@@ -22,7 +22,8 @@ button {
   inline-size: 100%;
   padding: var(
     --kawai-comp-accordion-header-padding,
-    var(--kawai-sys-space-sm) var(--kawai-sys-space-lg)
+    var(--kawai-comp-accordion-header-padding-y, var(--kawai-sys-space-sm))
+      var(--kawai-comp-accordion-header-padding-x, var(--kawai-sys-space-lg))
   );
   border: 0;
   border-radius: inherit;
@@ -51,7 +52,8 @@ button:focus-visible {
 .body {
   padding: var(
     --kawai-comp-accordion-body-padding,
-    0 var(--kawai-sys-space-lg) var(--kawai-sys-space-md)
+    var(--kawai-comp-accordion-body-padding-y, var(--kawai-sys-space-md))
+      var(--kawai-comp-accordion-body-padding-x, var(--kawai-sys-space-lg))
   );
   overflow: hidden;
 }

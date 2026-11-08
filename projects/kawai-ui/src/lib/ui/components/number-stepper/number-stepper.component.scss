@@ -1,0 +1,88 @@
+:host {
+  display: grid;
+  grid-template-columns: fit-content(50%) minmax(0, 1fr);
+  gap: 0 var(--kawai-comp-number-stepper-gap, var(--kawai-sys-space-lg));
+  align-items: center;
+  font-family: var(--kawai-sys-font-family);
+}
+
+label {
+  color: var(--kawai-comp-number-stepper-label-color, var(--kawai-sys-color-text-muted));
+}
+
+.stepper {
+  display: flex;
+  min-inline-size: 0;
+}
+
+input,
+button {
+  box-sizing: border-box;
+  margin: 0;
+  border: var(--kawai-sys-border-width) solid
+    var(--kawai-comp-number-stepper-border-color, var(--kawai-sys-color-border));
+  background: none;
+  font: inherit;
+}
+
+input {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  padding: var(
+    --kawai-comp-number-stepper-input-padding,
+    var(--kawai-comp-number-stepper-input-padding-y, 0)
+      var(--kawai-comp-number-stepper-input-padding-x, var(--kawai-sys-space-xs))
+  );
+  border-inline-width: 0;
+  color: var(--kawai-comp-number-stepper-input-color, var(--kawai-sys-color-text));
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+}
+
+input::-webkit-inner-spin-button,
+input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+button {
+  flex: none;
+  padding: var(
+    --kawai-comp-number-stepper-button-padding,
+    var(--kawai-comp-number-stepper-button-padding-y, 0)
+      var(--kawai-comp-number-stepper-button-padding-x, var(--kawai-sys-space-md))
+  );
+  color: var(--kawai-comp-number-stepper-button-color, var(--kawai-sys-color-primary));
+  cursor: pointer;
+}
+
+button:first-child {
+  border-start-start-radius: var(--kawai-comp-number-stepper-radius, var(--kawai-sys-radius-sm));
+  border-end-start-radius: var(--kawai-comp-number-stepper-radius, var(--kawai-sys-radius-sm));
+}
+
+button:last-child {
+  border-start-end-radius: var(--kawai-comp-number-stepper-radius, var(--kawai-sys-radius-sm));
+  border-end-end-radius: var(--kawai-comp-number-stepper-radius, var(--kawai-sys-radius-sm));
+}
+
+button:hover:not([aria-disabled='true']) {
+  background: var(
+    --kawai-comp-number-stepper-button-background-hover,
+    var(--kawai-sys-color-surface-hover)
+  );
+  color: var(--kawai-comp-number-stepper-button-color-hover, var(--kawai-sys-color-primary-hover));
+}
+
+button[aria-disabled='true'] {
+  color: var(--kawai-comp-number-stepper-button-color-disabled, var(--kawai-sys-color-text-muted));
+  cursor: default;
+}
+
+input:focus-visible,
+button:focus-visible {
+  outline: var(--kawai-sys-focus-ring-width) solid
+    var(--kawai-comp-number-stepper-focus-ring-color, var(--kawai-sys-color-primary));
+  outline-offset: 1px;
+}

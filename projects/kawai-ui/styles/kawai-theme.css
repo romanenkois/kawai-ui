@@ -1,8 +1,10 @@
 /*
  * kawai-ui theme: design tokens and the built-in light and dark themes.
  *
- * Import once in the app, before the app's own styles. Everything sits in `@layer kawai`,
- * so any unlayered app rule overrides it regardless of selector specificity or order.
+ * Import once in the app, before the app's own styles. Tokens sit in `@layer kawai`, so any
+ * unlayered app rule overrides them regardless of selector specificity or order. Style rules
+ * for elements rendered outside components (the tooltip) are unlayered at the end, so global
+ * resets like `* { padding: 0 }` don't strip them; override those with an equally specific rule.
  *
  * Token tiers (the prefix keeps them from colliding):
  *   --kawai-ref-*   raw values, one set per mode. Override these at :root to restyle a mode.
@@ -125,4 +127,28 @@
       --kawai-sys-shadow-raised: 0 2px 8px var(--kawai-sys-color-shadow);
     }
   }
+}
+
+/*
+ * Tooltip created by the `kawaiTooltip` directive in <body>, outside any component, so it can't
+ * use component styles. The directive sets only its `left`/`top`.
+ */
+.kawai-tooltip {
+  position: fixed;
+  z-index: var(--kawai-sys-z-tooltip);
+  max-inline-size: min(24rem, calc(100vw - 1rem));
+  padding: var(
+    --kawai-comp-tooltip-padding,
+    var(--kawai-comp-tooltip-padding-y, var(--kawai-sys-space-xs))
+      var(--kawai-comp-tooltip-padding-x, var(--kawai-sys-space-md))
+  );
+  border-radius: var(--kawai-comp-tooltip-radius, var(--kawai-sys-radius-sm));
+  background: var(--kawai-comp-tooltip-background, var(--kawai-sys-color-surface-raised));
+  color: var(--kawai-comp-tooltip-color, var(--kawai-sys-color-text));
+  font-family: var(--kawai-sys-font-family);
+  font-size: var(--kawai-comp-tooltip-font-size, var(--kawai-sys-font-size-sm));
+  line-height: var(--kawai-sys-line-height-tight);
+  overflow-wrap: anywhere;
+  box-shadow: var(--kawai-comp-tooltip-shadow, var(--kawai-sys-shadow-raised));
+  pointer-events: none;
 }

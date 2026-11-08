@@ -50,8 +50,9 @@ All tokens are prefixed by tier, so names never collide:
 
 The full list is exported as `KAWAI_TOKENS` with the `KawaiToken` type.
 
-The library CSS sits in `@layer kawai`, so any normal rule in your app wins, whatever its
-selector or order.
+The tokens sit in `@layer kawai`, so any normal rule in your app wins, whatever its selector
+or order. The only style rule in the stylesheet, `.kawai-tooltip`, is unlayered so global resets
+don't strip it; override it with a rule at least as specific, loaded after the theme.
 
 ```css
 /* Restyle a mode. Applies to `light`/`dark` and to `auto` in that mode. Set ref tokens on :root. */

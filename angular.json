@@ -12,6 +12,11 @@
       "root": "projects/kawai-ui",
       "sourceRoot": "projects/kawai-ui/src",
       "prefix": "kawai",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular/build:ng-packagr",
