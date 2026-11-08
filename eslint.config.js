@@ -13,6 +13,8 @@ const SIGNAL_FACTORIES =
   '/^(input|model|output|signal|computed|linkedSignal|viewChild|viewChildren|contentChild|contentChildren|resource|toSignal)$/';
 
 module.exports = defineConfig([
+  // Build output and caches, never source.
+  { ignores: ['dist/', 'out-tsc/', '.angular/', 'coverage/'] },
   {
     files: ['**/*.ts'],
     extends: [

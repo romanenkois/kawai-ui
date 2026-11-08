@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.lib.json",
   "compilerOptions": {
+    "rootDir": "..",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
   },
