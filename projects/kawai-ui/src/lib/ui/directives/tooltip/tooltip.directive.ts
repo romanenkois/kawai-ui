@@ -1,9 +1,11 @@
 import { DOCUMENT } from '@angular/common';
 import { DestroyRef, Directive, ElementRef, computed, inject, input } from '@angular/core';
 
+import { injectKawaiDefaults } from '../../../defaults/kawai-defaults';
 import { KAWAI_THEME_ATTRIBUTE } from '../../../theme/tokens';
-import { KawaiDeepPartial, resolveOptions } from '../../../utils/options';
-import { KAWAI_TOOLTIP_DEFAULTS, TooltipOptions, TooltipPosition } from './tooltip.model';
+import { KawaiDeepPartial, resolveOptionsChain } from '../../../utils/options';
+import { KAWAI_TOOLTIP_DEFAULTS } from './tooltip.constant';
+import { TooltipOptions, TooltipPosition } from './tooltip.model';
 
 const OPPOSITE: Record<TooltipPosition, TooltipPosition> = {
   top: 'bottom',
@@ -20,7 +22,8 @@ let nextId = 0;
  * Plain-text tooltip shown on hover and keyboard focus, hidden on leave, blur, Escape and scroll.
  * Takes the text alone (`kawaiTooltip="Save"`), or {@link TooltipOptions} for position and
  * truncation-only mode (`[kawaiTooltip]="{ text, onlyWhenTruncated: true }"`). `null` or empty
- * text turns it off.
+ * text turns it off. Options left out come from `provideKawaiDefaults()` levels, then
+ * `KAWAI_TOOLTIP_DEFAULTS`.
  *
  * The tooltip is appended to <body>, so it copies the host's nearest `kawai-theme` value to
  * match the themed subtree it came from.
@@ -39,8 +42,13 @@ export class TooltipDirective {
   readonly options = input.required<string | KawaiDeepPartial<TooltipOptions> | null>({
     alias: 'kawaiTooltip',
   });
+  private readonly defaultLevels = injectKawaiDefaults();
   private readonly resolved = computed<TooltipOptions | null>(() =>
-    resolveOptions(this.options(), KAWAI_TOOLTIP_DEFAULTS, 'text'),
+    resolveOptionsChain(
+      [...this.defaultLevels().map((level) => level.tooltip), this.options()],
+      KAWAI_TOOLTIP_DEFAULTS,
+      'text',
+    ),
   );
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);

@@ -23,17 +23,17 @@ export type KawaiDeepPartial<T> = { [K in keyof T]?: DeepPartialValue<T[K]> };
  * Always returns a new object; `defaults` is never mutated.
  */
 export function resolveOptions<T extends object, K extends keyof T>(
-  value: T[K] | KawaiDeepPartial<T> | undefined,
+  value: NoInfer<T>[K] | KawaiDeepPartial<NoInfer<T>> | undefined,
   defaults: T,
   shorthandKey: K,
 ): T;
 export function resolveOptions<T extends object, K extends keyof T>(
-  value: T[K] | KawaiDeepPartial<T> | null | undefined,
+  value: NoInfer<T>[K] | KawaiDeepPartial<NoInfer<T>> | null | undefined,
   defaults: T,
   shorthandKey: K,
 ): T | null;
 export function resolveOptions<T extends object, K extends keyof T>(
-  value: T[K] | KawaiDeepPartial<T> | null | undefined,
+  value: NoInfer<T>[K] | KawaiDeepPartial<NoInfer<T>> | null | undefined,
   defaults: T,
   shorthandKey: K,
 ): T | null {
@@ -41,6 +41,51 @@ export function resolveOptions<T extends object, K extends keyof T>(
   if (value === undefined) return merge(defaults, {});
   if (isPlainObject(value)) return merge(defaults, value);
   return merge(defaults, { [shorthandKey]: value });
+}
+
+/**
+ * Resolves an options value given at several levels, ordered from farthest to nearest (e.g.
+ * app defaults, local defaults, the input), against the library defaults. Each level is
+ * applied like {@link resolveOptions}: `undefined` skips the level, `null` turns the option
+ * off, and a later shorthand or object turns it back on, merging over the library defaults.
+ */
+export function resolveOptionsChain<T extends object, K extends keyof T>(
+  levels: readonly (NoInfer<T>[K] | KawaiDeepPartial<NoInfer<T>> | undefined)[],
+  defaults: T,
+  shorthandKey: K,
+): T;
+export function resolveOptionsChain<T extends object, K extends keyof T>(
+  levels: readonly (NoInfer<T>[K] | KawaiDeepPartial<NoInfer<T>> | null | undefined)[],
+  defaults: T,
+  shorthandKey: K,
+): T | null;
+export function resolveOptionsChain<T extends object, K extends keyof T>(
+  levels: readonly (NoInfer<T>[K] | KawaiDeepPartial<NoInfer<T>> | null | undefined)[],
+  defaults: T,
+  shorthandKey: K,
+): T | null {
+  let combined: KawaiDeepPartial<T> | null | undefined;
+  for (const level of levels) {
+    if (level === undefined) continue;
+    if (level === null) {
+      combined = null;
+      continue;
+    }
+    const partial: KawaiDeepPartial<T> = isPlainObject(level)
+      ? level
+      : ({ [shorthandKey]: level } as KawaiDeepPartial<T>);
+    combined = combined ? merge(combined, partial) : partial;
+  }
+  return resolveOptions(combined, defaults, shorthandKey);
+}
+
+/** For plain (non-options) inputs: the nearest level that isn't `undefined`, else `fallback`. */
+export function resolveValueChain<T>(levels: readonly (T | undefined)[], fallback: T): T {
+  for (let i = levels.length - 1; i >= 0; i--) {
+    const level = levels[i];
+    if (level !== undefined) return level;
+  }
+  return fallback;
 }
 
 function merge<T extends object>(base: T, override: object): T {

@@ -70,20 +70,37 @@ Lint enforces all of these:
 When several inputs configure one thing (a label, an indicator, a tooltip), they become one input instead:
 
 ```ts
-readonly heading = input<string | KawaiDeepPartial<AccordionHeadingOptions>>();
 readonly indicator = input<AccordionIndicatorPosition | KawaiDeepPartial<AccordionIndicatorOptions> | null>();
+private readonly defaultLevels = injectKawaiDefaults();
 protected readonly indicatorOptions = computed<AccordionIndicatorOptions | null>(() =>
-  resolveOptions(this.indicator(), KAWAI_ACCORDION_INDICATOR_DEFAULTS, 'position'),
+  resolveOptionsChain(
+    [...this.defaultLevels().map((level) => level.accordion?.indicator), this.indicator()],
+    KAWAI_ACCORDION_DEFAULTS.indicator,
+    'position',
+  ),
 );
 ```
 
 - The input accepts a shorthand (the one value usually needed, always a primitive), or a `KawaiDeepPartial<Options>` object where every field, nested ones included, may be left out.
 - Not passed means defaults. `null` means off (not rendered); allow it only where off makes sense, so a heading takes no `null` but an indicator does. Booleans stay `true`/`false` and never take `null`.
-- Resolve with `resolveOptions()` from `src/lib/utils/options.ts` inside a `computed()`, never with ad-hoc spreads. Nested plain objects merge; arrays, templates and functions replace.
-- Each options type gets a JSDoc'd interface in `<name>.model.ts` and an exported defaults constant: `KAWAI_<COMPONENT>_<GROUP>_DEFAULTS`, typed `Readonly<Options>`.
+- Each options type gets a JSDoc'd interface in `<name>.model.ts`. Nested plain objects merge; arrays, templates and functions replace.
 - Only for configuration. State and events stay separate (`expanded`, `value`, `toggled`, `valueChange`), styling stays in tokens, and projected templates stay marker directives.
 - Options objects are immutable: pass a new object to change them. Mutating one in place doesn't update the component.
 - In stories, flatten options into separate controls and rebuild the object in `render`.
+
+## Defaults
+
+Every configuration input (options inputs and plain ones like `overflow`) resolves through one chain, nearest first:
+
+**instance input → nearest `provideKawaiDefaults()` → … → app-level `provideKawaiDefaults()` → library defaults**
+
+- Library defaults live in `<name>.constant.ts` next to the component, as one object per component, `KAWAI_<COMPONENT>_DEFAULTS` typed `Readonly<<Component>Defaults>`, with every value filled in. Nothing else goes in the constant file.
+- `provideKawaiDefaults(config | Signal<config>)` (`src/lib/defaults/kawai-defaults.ts`) works in app config, route and component `providers`. Each level is partial and only states what it changes. A signal config updates components live.
+- Each component declares `<Component>DefaultsConfig` in its model: the same values as its inputs (shorthands and `null` included), every field optional, minus content (`heading.text`, tooltip `text`), which is never a default. Add it to `KawaiDefaultsConfig`.
+- Components read levels with `injectKawaiDefaults()` and resolve inside a `computed()`: options inputs with `resolveOptionsChain()`, plain inputs with `resolveValueChain()`. Never with ad-hoc spreads.
+- Configuration inputs have no initial value (`input<AccordionOverflow>()`), so `undefined` means "not set here" and the chain continues. The default lives only in the constant.
+- `null` at any level turns the option off from there down; a nearer level can turn it back on, merging over the library defaults.
+- Defaults that depend on the component's own content (e.g. no rotation for a custom indicator template) are applied to the library defaults inside the component, so any level can still override them.
 
 ## State Management
 

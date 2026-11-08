@@ -1,3 +1,5 @@
+import type { KawaiDeepPartial } from '../../../utils/options';
+
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 
 /** Options for `kawaiTooltip`. Pass the text alone as a shorthand, or any subset of these. */
@@ -15,8 +17,8 @@ export interface TooltipOptions {
   onlyWhenTruncated: boolean;
 }
 
-export const KAWAI_TOOLTIP_DEFAULTS: Readonly<TooltipOptions> = {
-  text: '',
-  position: 'bottom',
-  onlyWhenTruncated: false,
-};
+/**
+ * The `tooltip` part of `provideKawaiDefaults()`: the options minus content (`text`). Anything
+ * left out comes from the level above.
+ */
+export type TooltipDefaultsConfig = KawaiDeepPartial<Omit<TooltipOptions, 'text'>>;

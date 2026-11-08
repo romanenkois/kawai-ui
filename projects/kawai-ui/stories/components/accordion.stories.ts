@@ -1,4 +1,5 @@
 import {
+  applicationConfig,
   componentWrapperDecorator,
   moduleMetadata,
   type Meta,
@@ -17,6 +18,7 @@ import {
   type AccordionOverflow,
   type KawaiDeepPartial,
   type TooltipPosition,
+  provideKawaiDefaults,
 } from '../../src/public-api';
 
 /** The `heading`, `indicator` and `layout` options flattened into separate controls. */
@@ -211,4 +213,29 @@ export const CustomIndicator: Story = {
     <ng-template kawaiAccordionIndicator let-expanded>{{ expanded ? '−' : '+' }}</ng-template>
     ${BODY}
   `),
+};
+
+/**
+ * App-level defaults: `provideKawaiDefaults()` in the app config makes every accordion
+ * separated, with the indicator at the start. These accordions pass no options of their own;
+ * the second one overrides `layout` on the instance, which wins over the app level.
+ */
+export const WithAppDefaults: Story = {
+  decorators: [
+    applicationConfig({
+      providers: [provideKawaiDefaults({ accordion: { layout: 'separated', indicator: 'start' } })],
+    }),
+  ],
+  render: (args) => ({
+    props: args,
+    template: `
+      <kawai-accordion heading="From app defaults" [expanded]="expanded" (toggled)="expanded = !expanded">
+        ${BODY}
+      </kawai-accordion>
+      <div style="block-size: 0.5rem"></div>
+      <kawai-accordion heading="Instance: layout attached" layout="attached" [expanded]="true">
+        ${BODY}
+      </kawai-accordion>
+    `,
+  }),
 };

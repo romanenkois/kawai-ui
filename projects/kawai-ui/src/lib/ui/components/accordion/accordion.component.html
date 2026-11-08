@@ -46,7 +46,7 @@
 </h2>
 <div class="panel" [class.expanded]="expanded()">
   <div class="clip">
-    <div class="body" [class.scroll]="overflow() === 'scroll'" [id]="bodyId">
+    <div class="body" [class.scroll]="overflowValue() === 'scroll'" [id]="bodyId">
       @if (bodyRendered()) {
         <ng-container
           [ngTemplateOutlet]="bodyTemplate().template"

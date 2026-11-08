@@ -1,4 +1,5 @@
-import { TooltipPosition } from '../../directives/tooltip/tooltip.model';
+import type { KawaiDeepPartial } from '../../../utils/options';
+import type { TooltipOptions } from '../../directives/tooltip/tooltip.model';
 
 /** What the body does with content wider than the accordion. */
 export type AccordionOverflow = 'hidden' | 'scroll';
@@ -12,15 +13,12 @@ export interface AccordionHeadingOptions {
   text: string;
   /** Keep the text heading on one line with an ellipsis. Doesn't apply to heading templates. */
   truncate: boolean;
-  /** Tooltip with the full text, shown only while it is truncated. `null` for none. */
-  tooltip: { position: TooltipPosition } | null;
+  /**
+   * Tooltip with the full text, shown only while it is truncated. `null` for none. Fields left
+   * out (such as `position`) come from the tooltip defaults.
+   */
+  tooltip: KawaiDeepPartial<Pick<TooltipOptions, 'position'>> | null;
 }
-
-export const KAWAI_ACCORDION_HEADING_DEFAULTS: Readonly<AccordionHeadingOptions> = {
-  text: '',
-  truncate: true,
-  tooltip: { position: 'bottom' },
-};
 
 export type AccordionIndicatorPosition = 'start' | 'end';
 
@@ -37,11 +35,6 @@ export interface AccordionIndicatorOptions {
    */
   rotate: boolean;
 }
-
-export const KAWAI_ACCORDION_INDICATOR_DEFAULTS: Readonly<AccordionIndicatorOptions> = {
-  position: 'end',
-  rotate: true,
-};
 
 export type AccordionBodyLayout = 'attached' | 'separated';
 export type AccordionInnerCorners = 'rounded' | 'square';
@@ -65,11 +58,24 @@ export interface AccordionLayoutOptions {
   border: boolean;
 }
 
-export const KAWAI_ACCORDION_LAYOUT_DEFAULTS: Readonly<AccordionLayoutOptions> = {
-  body: 'attached',
-  innerCorners: 'rounded',
-  border: true,
-};
+/** The accordion's configuration with every value filled in: the shape of its library defaults. */
+export interface AccordionDefaults {
+  heading: AccordionHeadingOptions;
+  indicator: AccordionIndicatorOptions;
+  layout: AccordionLayoutOptions;
+  overflow: AccordionOverflow;
+}
+
+/**
+ * The `accordion` part of `provideKawaiDefaults()`. Same values as the inputs, minus content
+ * (`heading.text`). Anything left out comes from the level above.
+ */
+export interface AccordionDefaultsConfig {
+  heading?: KawaiDeepPartial<Omit<AccordionHeadingOptions, 'text'>>;
+  indicator?: AccordionIndicatorPosition | KawaiDeepPartial<AccordionIndicatorOptions> | null;
+  layout?: AccordionBodyLayout | KawaiDeepPartial<AccordionLayoutOptions>;
+  overflow?: AccordionOverflow;
+}
 
 /** Context of the accordion's heading, indicator and body templates. */
 export interface AccordionTemplateContext {

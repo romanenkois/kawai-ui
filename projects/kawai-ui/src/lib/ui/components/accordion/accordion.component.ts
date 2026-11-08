@@ -12,9 +12,10 @@ import {
   viewChild,
 } from '@angular/core';
 
+import { injectKawaiDefaults } from '../../../defaults/kawai-defaults';
+import { KawaiDeepPartial, resolveOptionsChain, resolveValueChain } from '../../../utils/options';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
 import { TooltipOptions } from '../../directives/tooltip/tooltip.model';
-import { KawaiDeepPartial, resolveOptions } from '../../../utils/options';
 import {
   AccordionBodyDirective,
   AccordionHeadingDirective,
@@ -25,13 +26,12 @@ import {
   AccordionIndicatorOptions,
   AccordionIndicatorPosition,
   AccordionBodyLayout,
+  AccordionDefaultsConfig,
   AccordionLayoutOptions,
   AccordionOverflow,
   AccordionTemplateContext,
-  KAWAI_ACCORDION_HEADING_DEFAULTS,
-  KAWAI_ACCORDION_INDICATOR_DEFAULTS,
-  KAWAI_ACCORDION_LAYOUT_DEFAULTS,
 } from './accordion.model';
+import { KAWAI_ACCORDION_DEFAULTS } from './accordion.constant';
 
 let nextId = 0;
 
@@ -42,7 +42,8 @@ let nextId = 0;
  *
  * `heading`, `indicator` and `layout` take a shorthand or an options object; see
  * {@link AccordionHeadingOptions}, {@link AccordionIndicatorOptions} and
- * {@link AccordionLayoutOptions}. Bordered and attached by default. Templates marked
+ * {@link AccordionLayoutOptions}. Bordered and attached by default. Configuration inputs left
+ * out come from `provideKawaiDefaults()` levels, then `KAWAI_ACCORDION_DEFAULTS`. Templates marked
  * `kawaiAccordionHeading` and `kawaiAccordionIndicator` replace the heading text and the chevron.
  */
 @Component({
@@ -69,8 +70,8 @@ export class AccordionComponent {
   /** Body layout (`attached` or `separated`), or {@link AccordionLayoutOptions}. */
   readonly layout = input<AccordionBodyLayout | KawaiDeepPartial<AccordionLayoutOptions>>();
   readonly expanded = input.required<boolean>();
-  /** What the body does with content wider than the accordion. */
-  readonly overflow = input<AccordionOverflow>('hidden');
+  /** What the body does with content wider than the accordion. Default `hidden`. */
+  readonly overflow = input<AccordionOverflow>();
   readonly toggled = output<void>();
 
   protected readonly bodyTemplate =
@@ -81,25 +82,45 @@ export class AccordionComponent {
     AccordionIndicatorDirective,
   );
 
+  private readonly defaultLevels = injectKawaiDefaults();
+  /** `provideKawaiDefaults()` levels above this accordion, app level first. */
+  private readonly defaults = computed<readonly (AccordionDefaultsConfig | undefined)[]>(() =>
+    this.defaultLevels().map((level) => level.accordion),
+  );
+
   protected readonly headingOptions = computed<AccordionHeadingOptions>(() =>
-    resolveOptions(this.heading(), KAWAI_ACCORDION_HEADING_DEFAULTS, 'text'),
+    resolveOptionsChain(
+      [...this.defaults().map((level) => level?.heading), this.heading()],
+      KAWAI_ACCORDION_DEFAULTS.heading,
+      'text',
+    ),
   );
   protected readonly indicatorOptions = computed<AccordionIndicatorOptions | null>(() =>
-    resolveOptions(
-      this.indicator(),
-      { ...KAWAI_ACCORDION_INDICATOR_DEFAULTS, rotate: !this.indicatorTemplate() },
+    resolveOptionsChain(
+      [...this.defaults().map((level) => level?.indicator), this.indicator()],
+      // A custom indicator isn't rotated unless some level sets `rotate`.
+      { ...KAWAI_ACCORDION_DEFAULTS.indicator, rotate: !this.indicatorTemplate() },
       'position',
     ),
   );
   protected readonly layoutOptions = computed<AccordionLayoutOptions>(() =>
-    resolveOptions(this.layout(), KAWAI_ACCORDION_LAYOUT_DEFAULTS, 'body'),
+    resolveOptionsChain(
+      [...this.defaults().map((level) => level?.layout), this.layout()],
+      KAWAI_ACCORDION_DEFAULTS.layout,
+      'body',
+    ),
+  );
+  protected readonly overflowValue = computed<AccordionOverflow>(() =>
+    resolveValueChain(
+      [...this.defaults().map((level) => level?.overflow), this.overflow()],
+      KAWAI_ACCORDION_DEFAULTS.overflow,
+    ),
   );
   /** Full-text tooltip for a truncated text heading. */
   protected readonly labelTooltip = computed<KawaiDeepPartial<TooltipOptions> | null>(() => {
     const { text, truncate, tooltip } = this.headingOptions();
-    return truncate && tooltip
-      ? { text, position: tooltip.position, onlyWhenTruncated: true }
-      : null;
+    // Fields the heading leaves out (e.g. position) fall through to the tooltip defaults.
+    return truncate && tooltip ? { ...tooltip, text, onlyWhenTruncated: true } : null;
   });
   /** With a heading template, the heading text labels the button; otherwise its content does. */
   protected readonly buttonLabel = computed<string | null>(() => {

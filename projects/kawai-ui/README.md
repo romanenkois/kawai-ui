@@ -96,6 +96,33 @@ built-in palettes.
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.0.
 
+## Defaults
+
+Components take configuration like layout or tooltip position as inputs. Anything an instance
+doesn't set comes from `provideKawaiDefaults()`, so you can set it once for the whole app, and
+differently for one route or feature:
+
+```ts
+// app.config.ts
+providers: [provideKawaiDefaults({ accordion: { layout: { border: false } }, tooltip: { position: 'top' } })];
+
+// a feature component: only what differs there
+@Component({ providers: [provideKawaiDefaults({ accordion: { layout: 'separated' } })], … })
+```
+
+Each value is resolved from the nearest place that sets it:
+
+**instance input → nearest `provideKawaiDefaults()` → … → app-level `provideKawaiDefaults()` → library defaults**
+
+- Every level is partial. Nested options merge, so `{ layout: { border: false } }` keeps the
+  inherited `body` and `innerCorners`.
+- `null` turns an option off from that level down, e.g. `{ accordion: { indicator: null } }`. A
+  nearer level or an instance can turn it back on.
+- Pass a signal instead of an object to change defaults at runtime, e.g. from a user setting.
+  Components update live.
+- Content such as heading or tooltip text is never a default.
+- The library defaults are exported per component, e.g. `KAWAI_ACCORDION_DEFAULTS`.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:

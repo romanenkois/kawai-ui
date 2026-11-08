@@ -34,6 +34,8 @@ module.exports = defineConfig([
     rules: {
       // Parameters starting with `_` are deliberately unused, e.g. in `ngTemplateContextGuard(_dir, _context)`.
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      // Angular classes can be empty when the decorator does the work (template-only components).
+      '@typescript-eslint/no-extraneous-class': ['error', { allowWithDecorator: true }],
       // Numbers in template strings (generated ids, px values) are always safe to interpolate.
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
 

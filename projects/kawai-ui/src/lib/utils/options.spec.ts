@@ -1,4 +1,4 @@
-import { resolveOptions } from './options';
+import { resolveOptions, resolveOptionsChain, resolveValueChain } from './options';
 
 interface Options {
   text: string;
@@ -65,5 +65,53 @@ describe('resolveOptions', () => {
     const snapshot = structuredClone(DEFAULTS);
     resolveOptions<Options, 'text'>({ text: 'x', tooltip: { position: 'top' } }, DEFAULTS, 'text');
     expect(DEFAULTS).toEqual(snapshot);
+  });
+});
+
+describe('resolveOptionsChain', () => {
+  it('returns the defaults when no level sets anything', () => {
+    expect(resolveOptionsChain([undefined, undefined], DEFAULTS, 'text')).toEqual(DEFAULTS);
+  });
+
+  it('takes each field from the nearest level that sets it', () => {
+    const resolved = resolveOptionsChain(
+      [{ truncate: false, tooltip: { position: 'top' } }, { tooltip: { delay: 5 } }, 'Hi'],
+      DEFAULTS,
+      'text',
+    );
+    expect(resolved).toEqual({
+      ...DEFAULTS,
+      text: 'Hi',
+      truncate: false,
+      tooltip: { position: 'top', delay: 5 },
+    });
+  });
+
+  it('turns the option off from a null level down', () => {
+    expect(resolveOptionsChain([{ truncate: false }, null], DEFAULTS, 'text')).toBeNull();
+  });
+
+  it('turns it back on below a null level, over the library defaults', () => {
+    expect(
+      resolveOptionsChain([{ text: 'app' }, null, { truncate: false }], DEFAULTS, 'text'),
+    ).toEqual({ ...DEFAULTS, truncate: false });
+  });
+
+  it('never mutates the levels or the defaults', () => {
+    const level = { tooltip: { position: 'top' as const } };
+    const snapshot = structuredClone(DEFAULTS);
+    resolveOptionsChain([level, { tooltip: { delay: 1 } }], DEFAULTS, 'text');
+    expect(level).toEqual({ tooltip: { position: 'top' } });
+    expect(DEFAULTS).toEqual(snapshot);
+  });
+});
+
+describe('resolveValueChain', () => {
+  it('returns the nearest defined level', () => {
+    expect(resolveValueChain(['app', 'local', undefined], 'lib')).toBe('local');
+  });
+
+  it('falls back when no level is defined', () => {
+    expect(resolveValueChain([undefined], 'lib')).toBe('lib');
   });
 });
