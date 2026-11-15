@@ -8,7 +8,7 @@
     (click)="toggled.emit()"
   >
     @if (headingTemplate(); as customHeading) {
-      <span #label class="label">
+      <span #label class="label" [style.text-align]="headingOptions().align">
         <ng-container
           [ngTemplateOutlet]="customHeading.template"
           [ngTemplateOutletContext]="context()"
@@ -19,6 +19,7 @@
         #label
         class="label"
         [class.truncate]="headingOptions().truncate"
+        [style.text-align]="headingOptions().align"
         [kawaiTooltip]="labelTooltip()"
         >{{ headingOptions().text }}</span
       >

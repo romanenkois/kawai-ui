@@ -1,13 +1,23 @@
 :host {
   display: grid;
-  grid-template-columns: fit-content(50%) minmax(0, 1fr);
+  grid-template-columns: var(--kawai-comp-number-stepper-label-width, fit-content(50%)) minmax(
+      0,
+      1fr
+    );
   gap: 0 var(--kawai-comp-number-stepper-gap, var(--kawai-sys-space-lg));
   align-items: center;
   font-family: var(--kawai-sys-font-family);
 }
 
-label {
+.label {
+  min-inline-size: 0;
   color: var(--kawai-comp-number-stepper-label-color, var(--kawai-sys-color-text-muted));
+}
+
+.label.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .stepper {

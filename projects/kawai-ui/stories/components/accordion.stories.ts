@@ -17,6 +17,7 @@ import {
   type AccordionLayoutOptions,
   type AccordionOverflow,
   type KawaiDeepPartial,
+  type KawaiLabelAlign,
   type TooltipPosition,
   provideKawaiDefaults,
 } from '../../src/public-api';
@@ -26,6 +27,7 @@ interface Args {
   headingText: string;
   headingTruncate: boolean;
   headingTooltip: TooltipPosition | 'none';
+  headingAlign: KawaiLabelAlign;
   indicatorPosition: 'start' | 'end' | 'none';
   indicatorRotate: 'default' | 'on' | 'off';
   layoutBody: AccordionLayoutOptions['body'];
@@ -42,6 +44,7 @@ function headingOptions(args: Args): KawaiDeepPartial<AccordionHeadingOptions> {
     text: args.headingText,
     truncate: args.headingTruncate,
     tooltip: args.headingTooltip === 'none' ? null : { position: args.headingTooltip },
+    align: args.headingAlign,
   };
 }
 
@@ -99,6 +102,7 @@ const meta: Meta<Args> = {
     headingText: 'Details',
     headingTruncate: true,
     headingTooltip: 'bottom',
+    headingAlign: 'start',
     indicatorPosition: 'end',
     indicatorRotate: 'default',
     layoutBody: 'attached',
@@ -116,6 +120,11 @@ const meta: Meta<Args> = {
       description: '`heading.tooltip.position`; `none` is `heading.tooltip: null`.',
       control: 'inline-radio',
       options: ['top', 'bottom', 'left', 'right', 'none'],
+    },
+    headingAlign: {
+      description: '`heading.align` within the header.',
+      control: 'inline-radio',
+      options: ['start', 'center', 'end'],
     },
     indicatorPosition: {
       description: '`indicator.position`; `none` is `indicator: null`.',
@@ -155,6 +164,9 @@ export const IndicatorAtStart: Story = { args: { indicatorPosition: 'start' } };
 
 /** `[indicator]="null"` renders no indicator. */
 export const NoIndicator: Story = { args: { indicatorPosition: 'none' } };
+
+/** `heading.align: 'center'` centers the heading text in the header. */
+export const CenteredHeading: Story = { args: { headingAlign: 'center' } };
 
 /** `layout="separated"`: header and body are separate boxes with a gap between them. */
 export const Separated: Story = { args: { layoutBody: 'separated' } };

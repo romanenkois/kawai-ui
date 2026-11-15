@@ -115,6 +115,7 @@ export const KAWAI_COMP_TOKENS = [
 
   '--kawai-comp-number-stepper-gap',
   '--kawai-comp-number-stepper-label-color',
+  '--kawai-comp-number-stepper-label-width',
   '--kawai-comp-number-stepper-border-color',
   '--kawai-comp-number-stepper-radius',
   '--kawai-comp-number-stepper-input-padding',
@@ -132,6 +133,7 @@ export const KAWAI_COMP_TOKENS = [
 
   '--kawai-comp-segmented-control-gap',
   '--kawai-comp-segmented-control-label-color',
+  '--kawai-comp-segmented-control-label-width',
   '--kawai-comp-segmented-control-border-color',
   '--kawai-comp-segmented-control-radius',
   '--kawai-comp-segmented-control-option-padding',

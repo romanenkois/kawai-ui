@@ -1,4 +1,11 @@
-<span class="label" [id]="labelId">{{ label() }}</span>
+<span
+  class="label"
+  [id]="labelId"
+  [class.truncate]="labelOptions().truncate"
+  [style.text-align]="labelOptions().align"
+  [kawaiTooltip]="labelTooltip()"
+  >{{ labelOptions().text }}</span
+>
 <div class="options" role="radiogroup" [attr.aria-labelledby]="labelId">
   @for (option of options(); track option.value) {
     <label>
@@ -9,7 +16,9 @@
         [checked]="option.value === value()"
         (change)="valueChange.emit(option.value)"
       />
-      <span>{{ option.label }}</span>
+      <span [kawaiTooltip]="{ text: option.label, onlyWhenTruncated: true }">{{
+        option.label
+      }}</span>
     </label>
   }
 </div>

@@ -1,13 +1,23 @@
 :host {
   display: grid;
-  grid-template-columns: fit-content(50%) minmax(0, 1fr);
+  grid-template-columns: var(--kawai-comp-segmented-control-label-width, fit-content(50%)) minmax(
+      0,
+      1fr
+    );
   gap: 0 var(--kawai-comp-segmented-control-gap, var(--kawai-sys-space-lg));
   align-items: center;
   font-family: var(--kawai-sys-font-family);
 }
 
 .label {
+  min-inline-size: 0;
   color: var(--kawai-comp-segmented-control-label-color, var(--kawai-sys-color-text-muted));
+}
+
+.label.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .options {
@@ -22,6 +32,7 @@ label {
   position: relative;
   flex: 1 1 0;
   min-inline-size: 0;
+  cursor: pointer;
 }
 
 label + label {
@@ -29,13 +40,17 @@ label + label {
     var(--kawai-comp-segmented-control-border-color, var(--kawai-sys-color-border));
 }
 
-/* The native radio stays focusable and announced; the span is what is seen. */
+/*
+ * The native radio stays focusable and announced; the span is what is seen. Pointer events go
+ * to the span (so its truncation tooltip can open); clicking it still selects the radio,
+ * since the span is inside the radio's <label>.
+ */
 input {
   position: absolute;
   inset: 0;
   margin: 0;
   opacity: 0;
-  cursor: pointer;
+  pointer-events: none;
 }
 
 .options span {

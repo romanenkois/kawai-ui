@@ -1,24 +1,15 @@
 import type { KawaiDeepPartial } from '../../../utils/options';
-import type { TooltipOptions } from '../../directives/tooltip/tooltip.model';
+import type { KawaiLabelDefaultsConfig, KawaiLabelOptions } from '../../shared/label/label.model';
 
 /** What the body does with content wider than the accordion. */
 export type AccordionOverflow = 'hidden' | 'scroll';
 
-/** Options for `heading`. Pass the text alone as a shorthand, or any subset of these. */
-export interface AccordionHeadingOptions {
-  /**
-   * Heading text. With a `kawaiAccordionHeading` template it isn't shown, but becomes the
-   * header button's accessible label.
-   */
-  text: string;
-  /** Keep the text heading on one line with an ellipsis. Doesn't apply to heading templates. */
-  truncate: boolean;
-  /**
-   * Tooltip with the full text, shown only while it is truncated. `null` for none. Fields left
-   * out (such as `position`) come from the tooltip defaults.
-   */
-  tooltip: KawaiDeepPartial<Pick<TooltipOptions, 'position'>> | null;
-}
+/**
+ * Options for `heading`: the shared {@link KawaiLabelOptions}. With a `kawaiAccordionHeading`
+ * template, `text` isn't shown but becomes the header button's accessible label, `align` still
+ * applies, and `truncate` and `tooltip` don't (the template lays itself out).
+ */
+export type AccordionHeadingOptions = KawaiLabelOptions;
 
 export type AccordionIndicatorPosition = 'start' | 'end';
 
@@ -71,7 +62,7 @@ export interface AccordionDefaults {
  * (`heading.text`). Anything left out comes from the level above.
  */
 export interface AccordionDefaultsConfig {
-  heading?: KawaiDeepPartial<Omit<AccordionHeadingOptions, 'text'>>;
+  heading?: KawaiLabelDefaultsConfig;
   indicator?: AccordionIndicatorPosition | KawaiDeepPartial<AccordionIndicatorOptions> | null;
   layout?: AccordionBodyLayout | KawaiDeepPartial<AccordionLayoutOptions>;
   overflow?: AccordionOverflow;

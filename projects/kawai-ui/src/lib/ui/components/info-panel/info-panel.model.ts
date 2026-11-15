@@ -1,3 +1,6 @@
+/** How a list of links too wide for its field behaves: wrap onto more lines, or scroll on one. */
+export type InfoPanelLinksOverflow = 'wrap' | 'scroll';
+
 /** A clickable value; `InfoPanelComponent` emits it through `linkClicked`. */
 export interface InfoLink {
   text: string;
@@ -21,8 +24,11 @@ export interface InfoField {
   /** Plain value, or clickable links. With links, `value` is shown when the list is empty. */
   value?: string;
   links?: InfoLink[];
-  /** How a links list that is too wide behaves: wrap onto more lines, or scroll on one. Defaults to wrap. */
-  linksOverflow?: 'wrap' | 'scroll';
+  /**
+   * How this field's links list behaves when too wide. Left out, it follows the panel's
+   * `linksOverflow` (and its defaults chain).
+   */
+  linksOverflow?: InfoPanelLinksOverflow;
 }
 
 /** Label/value pairs in two columns. */
@@ -52,3 +58,16 @@ export interface InfoButtonItem {
 
 export type InfoItem =
   InfoTitleItem | InfoTextItem | InfoFieldsItem | InfoTableItem | InfoButtonItem;
+
+/** The info panel's configuration with every value filled in: the shape of its library defaults. */
+export interface InfoPanelDefaults {
+  linksOverflow: InfoPanelLinksOverflow;
+}
+
+/**
+ * The `infoPanel` part of `provideKawaiDefaults()`. Anything left out comes from the level
+ * above.
+ */
+export interface InfoPanelDefaultsConfig {
+  linksOverflow?: InfoPanelLinksOverflow;
+}

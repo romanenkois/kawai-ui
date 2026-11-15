@@ -13,7 +13,10 @@
         @for (field of item.fields; track field.label) {
           <dt [kawaiTooltip]="{ text: field.label, onlyWhenTruncated: true }">{{ field.label }}</dt>
           @if (field.links?.length) {
-            <dd class="links" [class.scroll]="field.linksOverflow === 'scroll'">
+            <dd
+              class="links"
+              [class.scroll]="(field.linksOverflow ?? linksOverflowValue()) === 'scroll'"
+            >
               @for (link of field.links; track link.value) {
                 <button type="button" (click)="linkClicked.emit(link)">{{ link.text }}</button>
               }

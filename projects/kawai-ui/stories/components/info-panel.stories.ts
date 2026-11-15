@@ -10,6 +10,13 @@ const meta: Meta<InfoPanelComponent> = {
     componentWrapperDecorator((story) => `<div style="max-inline-size: 20rem">${story}</div>`),
   ],
   args: { linkClicked: fn() },
+  argTypes: {
+    linksOverflow: {
+      description: 'Panel default for fields without their own `linksOverflow`.',
+      control: 'inline-radio',
+      options: ['wrap', 'scroll'],
+    },
+  },
 };
 export default meta;
 type Story = StoryObj<InfoPanelComponent>;
@@ -71,6 +78,38 @@ export const ScrollingLinks: Story = {
             label: 'Tags',
             linksOverflow: 'scroll',
             links: ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta'].map((t) => ({
+              text: t,
+              value: t,
+            })),
+          },
+        ],
+      },
+    ],
+  },
+};
+
+/**
+ * `linksOverflow="scroll"` on the panel makes every field's links scroll on one line, unless the
+ * field sets its own `linksOverflow`.
+ */
+export const PanelLinksScroll: Story = {
+  args: {
+    linksOverflow: 'scroll',
+    items: [
+      {
+        type: 'fields',
+        fields: [
+          {
+            label: 'Tags',
+            links: ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta'].map((t) => ({
+              text: t,
+              value: t,
+            })),
+          },
+          {
+            label: 'Wraps',
+            linksOverflow: 'wrap',
+            links: ['one', 'two', 'three', 'four', 'five', 'six', 'seven'].map((t) => ({
               text: t,
               value: t,
             })),
