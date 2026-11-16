@@ -51,8 +51,9 @@ All tokens are prefixed by tier, so names never collide:
 The full list is exported as `KAWAI_TOKENS` with the `KawaiToken` type.
 
 The tokens sit in `@layer kawai`, so any normal rule in your app wins, whatever its selector
-or order. The only style rule in the stylesheet, `.kawai-tooltip`, is unlayered so global resets
-don't strip it; override it with a rule at least as specific, loaded after the theme.
+or order. The only style rules in the stylesheet, `.kawai-tooltip` and the focus ring of
+truncated text (`[data-kawai-truncated]:focus-visible`), are unlayered so global resets don't
+strip them; override them with a rule at least as specific, loaded after the theme.
 
 ```css
 /* Restyle a mode. Applies to `light`/`dark` and to `auto` in that mode. Set ref tokens on :root. */
@@ -87,8 +88,9 @@ enclosing theme:
 }
 ```
 
-Prefer `kawai-theme` values for custom themes. Tooltips render at `<body>` and copy the nearest
-`kawai-theme` value, but they don't see tokens set by other selectors on their host's ancestors.
+Prefer `kawai-theme` values for custom themes. Tooltips render at `<body>` (in the browser's top
+layer, so they need no z-index) and copy the nearest `kawai-theme` value, but they don't see
+tokens set by other selectors on their host's ancestors.
 
 Custom themes are responsible for their own contrast: text colors need 4.5:1 against the
 surface colors, borders and focus rings 3:1. `npm run check:theme` in this repo checks the
@@ -122,6 +124,31 @@ Each value is resolved from the nearest place that sets it:
   Components update live.
 - Content such as heading or tooltip text is never a default.
 - The library defaults are exported per component, e.g. `KAWAI_ACCORDION_DEFAULTS`.
+
+## Accessibility
+
+- **Truncated text** shows in full in a tooltip on hover. The keyboard reaches it too: text
+  inside a control (an accordion heading, a segmented option, a field label) opens when that
+  control has keyboard focus, and other clipped text becomes a tab stop while it is clipped.
+- **Tooltips** open after `showDelay` (300 ms) on hover and at once on keyboard focus, stay open
+  while the pointer is on them, and close `hideDelay` (100 ms) after it leaves, or at once on
+  Escape. Both delays are tooltip options, so `provideKawaiDefaults({ tooltip: { showDelay: 0 } })`
+  changes them app-wide.
+- **Heading levels**: the accordion renders `<h2>` and info panel titles `<h3>` by default. Set
+  `headingLevel` / `titleLevel` (on an instance or in `provideKawaiDefaults()`) to fit the page
+  outline around them.
+- **Translating built-in text**: the number stepper names its buttons from the templates
+  `decreaseLabel` and `increaseLabel`, where `{label}` stands for the label text:
+
+  ```ts
+  provideKawaiDefaults({
+    numberStepper: { decreaseLabel: '{label} verringern', increaseLabel: '{label} erhöhen' },
+  });
+  ```
+
+In this repo, `npm test` runs axe on every component in jsdom, and `npm run test:a11y` builds
+Storybook and runs axe on every story in a real browser, in the light and the dark theme. The
+first time, download the browser with `npx playwright install chromium-headless-shell`.
 
 ## Code scaffolding
 

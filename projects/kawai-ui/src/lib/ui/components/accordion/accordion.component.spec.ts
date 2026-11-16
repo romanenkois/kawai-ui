@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { KawaiDefaultsConfig, provideKawaiDefaults } from '../../../defaults/kawai-defaults';
+import { expectNoAxeViolations } from '../../../testing/axe';
 import { AccordionBodyDirective } from './accordion-templates.directive';
 import { AccordionComponent } from './accordion.component';
 
@@ -13,7 +14,14 @@ import { AccordionComponent } from './accordion.component';
     <kawai-accordion id="plain" heading="Plain" [expanded]="true">
       <ng-template kawaiAccordionBody>Body</ng-template>
     </kawai-accordion>
-    <kawai-accordion id="own" heading="Own" [expanded]="true" layout="attached" indicator="start">
+    <kawai-accordion
+      id="own"
+      heading="Own"
+      [expanded]="true"
+      [headingLevel]="4"
+      layout="attached"
+      indicator="start"
+    >
       <ng-template kawaiAccordionBody>Body</ng-template>
     </kawai-accordion>
   `,
@@ -50,6 +58,22 @@ describe('AccordionComponent defaults chain', () => {
     expect(own.classList).not.toContain('separated');
     expect(own.querySelector('button')?.classList).toContain('indicator-start');
     expect(own.querySelector('.indicator svg')).not.toBeNull();
+  });
+
+  it('renders the heading at the resolved level', async () => {
+    expect(accordion('plain').querySelector('.heading')?.tagName).toBe('H2'); // library default
+    expect(accordion('own').querySelector('.heading')?.tagName).toBe('H4'); // instance
+    appDefaults.set({ accordion: { headingLevel: 3 } });
+    await fixture.whenStable();
+    expect(accordion('plain').querySelector('.heading')?.tagName).toBe('H3'); // app level
+    expect(accordion('own').querySelector('.heading')?.tagName).toBe('H4');
+    expect(accordion('plain').getAttribute('aria-labelledby')).toBe(
+      accordion('plain').querySelector('.heading')?.id,
+    );
+  });
+
+  it('has no axe violations', async () => {
+    await expectNoAxeViolations(fixture.nativeElement as HTMLElement);
   });
 
   it('updates when a signal default changes', async () => {

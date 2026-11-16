@@ -9,7 +9,7 @@
 <div class="stepper">
   <button
     type="button"
-    [attr.aria-label]="'Decrease ' + labelOptions().text"
+    [attr.aria-label]="decreaseName()"
     [attr.aria-controls]="inputId"
     [attr.aria-disabled]="value() <= min()"
     (click)="step(-1)"
@@ -30,7 +30,7 @@
   />
   <button
     type="button"
-    [attr.aria-label]="'Increase ' + labelOptions().text"
+    [attr.aria-label]="increaseName()"
     [attr.aria-controls]="inputId"
     [attr.aria-disabled]="value() >= max()"
     (click)="step(1)"

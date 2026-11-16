@@ -1,0 +1,23 @@
+<header>
+  <strong>kawai-ui playground</strong>
+  <span class="mode" title="Which kawai-ui this build imports">{{ mode }}</span>
+  <kawai-segmented-control
+    class="theme"
+    label="Theme"
+    [options]="themes"
+    [value]="theme()"
+    (valueChange)="theme.set($event)"
+  />
+</header>
+
+<nav aria-label="Components">
+  @for (link of links; track link.path) {
+    <a [routerLink]="link.path" routerLinkActive="active" ariaCurrentWhenActive="page">{{
+      link.label
+    }}</a>
+  }
+</nav>
+
+<main>
+  <router-outlet />
+</main>

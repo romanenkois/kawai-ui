@@ -7,4 +7,6 @@ import type { NumberStepperDefaults } from './number-stepper.model';
  */
 export const KAWAI_NUMBER_STEPPER_DEFAULTS: Readonly<NumberStepperDefaults> = {
   label: KAWAI_LABEL_DEFAULTS,
+  decreaseLabel: 'Decrease {label}',
+  increaseLabel: 'Increase {label}',
 };

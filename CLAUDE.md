@@ -32,9 +32,10 @@ How components and directives are built (files, inputs, options, defaults, styli
 Run whichever of these the change touches. All must pass:
 
 - `npm run lint`: ESLint, including template accessibility and the type rules in `project-rules.md`
-- `npm test`: unit tests
+- `npm test`: unit tests, including an axe check per component
 - `npm run check:theme`: token list in sync with usage; built-in palettes pass WCAG AA contrast
 - `ng build kawai-ui`: library build
 - `npm run build-storybook`: when components, stories or tokens changed
+- `npm run test:a11y`: when components, stories or tokens changed. Builds Storybook itself, then runs axe on every story in a real browser, in light and dark (first time: `npx playwright install chromium-headless-shell`)
 
 The editor's ESLint doesn't see files changed outside the editor (typescript-eslint's editor mode doesn't watch files). After changing shared files such as models, constants or `kawai-defaults.ts`, tell the user to run "ESLint: Restart ESLint Server" if the editor shows errors the CLI doesn't.

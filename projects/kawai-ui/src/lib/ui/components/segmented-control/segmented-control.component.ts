@@ -1,4 +1,13 @@
-import { Component, computed, effect, input, isDevMode, output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  computed,
+  effect,
+  inject,
+  input,
+  isDevMode,
+  output,
+} from '@angular/core';
 
 import { injectKawaiDefaults } from '../../../defaults/kawai-defaults';
 import { KawaiDeepPartial, resolveOptionsChain } from '../../../utils/options';
@@ -13,7 +22,8 @@ let nextId = 0;
 
 /**
  * A labelled row of mutually exclusive options, built on native radio inputs so arrow keys
- * move the selection. Stateless: the parent owns `value` and reacts to `valueChange`.
+ * move the selection. Stateless: the parent owns `value` and reacts to `valueChange`; the
+ * checked radio always follows `value`, also when the parent turns a change down.
  *
  * `label` takes the text or {@link KawaiLabelOptions}; options left out come from
  * `provideKawaiDefaults()` levels, then `KAWAI_SEGMENTED_CONTROL_DEFAULTS`. Option labels stay
@@ -45,6 +55,8 @@ export class SegmentedControlComponent<T extends string> {
     labelTooltip(this.labelOptions()),
   );
 
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
   protected readonly labelId = `kawai-segmented-control-${nextId}-label`;
   protected readonly name = `kawai-segmented-control-${nextId++}`;
 
@@ -57,5 +69,16 @@ export class SegmentedControlComponent<T extends string> {
         );
       });
     }
+  }
+
+  protected choose(value: T): void {
+    this.valueChange.emit(value);
+    // The browser has already checked the clicked radio. Put the radios back on `value`: if
+    // the parent takes the change, the `[checked]` bindings move them on the next render; if
+    // it doesn't, `value` never changes and nothing else would undo the browser's state.
+    const current = this.value();
+    this.host.nativeElement.querySelectorAll('input').forEach((radio, index) => {
+      radio.checked = this.options()[index]?.value === current;
+    });
   }
 }

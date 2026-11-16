@@ -1,0 +1,11 @@
+/* Default (source) mode: `kawai-ui` is the library source, so library edits rebuild at once. */
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "types": [],
+    "paths": {
+      "kawai-ui": ["../kawai-ui/src/public-api.ts"]
+    }
+  },
+  "include": ["src/**/*.ts"]
+}

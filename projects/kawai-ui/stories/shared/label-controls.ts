@@ -7,25 +7,29 @@ import type {
   TooltipPosition,
 } from '../../src/public-api';
 
-/** `label` options flattened into separate Storybook controls. */
+/**
+ * `label` options flattened into separate Storybook controls. No arg may share a name with a
+ * non-input member of the component (such as its `labelTooltip`): Storybook copies story props
+ * onto the component instance and would overwrite it.
+ */
 export interface LabelArgs {
   labelText: string;
   labelTruncate: boolean;
-  labelTooltip: TooltipPosition | 'none';
+  labelTooltipPosition: TooltipPosition | 'none';
   labelAlign: KawaiLabelAlign;
 }
 
 export const LABEL_ARGS: LabelArgs = {
   labelText: 'Label',
   labelTruncate: true,
-  labelTooltip: 'bottom',
+  labelTooltipPosition: 'bottom',
   labelAlign: 'start',
 };
 
 export const LABEL_ARG_TYPES: Partial<ArgTypes<LabelArgs>> = {
   labelText: { description: '`label.text`, or `label` as a shorthand.' },
   labelTruncate: { description: '`label.truncate`' },
-  labelTooltip: {
+  labelTooltipPosition: {
     description: '`label.tooltip.position`; `none` is `label.tooltip: null`.',
     control: 'inline-radio',
     options: ['top', 'bottom', 'left', 'right', 'none'],
@@ -42,7 +46,7 @@ export function labelOptions(args: LabelArgs): KawaiDeepPartial<KawaiLabelOption
   return {
     text: args.labelText,
     truncate: args.labelTruncate,
-    tooltip: args.labelTooltip === 'none' ? null : { position: args.labelTooltip },
+    tooltip: args.labelTooltipPosition === 'none' ? null : { position: args.labelTooltipPosition },
     align: args.labelAlign,
   };
 }

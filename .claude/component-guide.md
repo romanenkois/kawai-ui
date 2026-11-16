@@ -17,6 +17,9 @@ Each component lives in `src/lib/ui/components/<name>/`, each directive in `src/
 | `<name>.constant.ts`            | Only the library defaults, `KAWAI_<COMPONENT>_DEFAULTS`                                                    |
 | `<name>.component.spec.ts`      | Tests: the defaults chain plus the component's core behaviour                                              |
 | `<name>-templates.directive.ts` | Marker directives for projected templates, when the component takes any                                    |
+| `index.ts`                      | The folder's barrel: `export *` of every public file in it (never the spec). Required in every folder      |
+
+The parent barrel (`components/index.ts`, `directives/index.ts`) only re-exports the folders (`export * from './accordion';`), never individual files. A new public file goes in the folder's own `index.ts`.
 
 Pieces several components share go in `src/lib/ui/shared/<name>/` with the same model/constant split (e.g. `shared/label/`).
 
@@ -106,6 +109,8 @@ All text and labels (headings, field labels, values, option labels, button text)
 
 The tooltip's host must be the element that clips (`overflow: hidden; text-overflow: ellipsis`), and the mouse must be able to reach it: an overlay on top (like a transparent radio input) blocks hover, so give the overlay `pointer-events: none`.
 
+The keyboard must reach it too, and `kawaiTooltip` finds how by itself: a host inside a `button` or link, or that is (or is inside) the `<label>` of a control, opens while that control has keyboard focus; any other host becomes a tab stop (`tabindex="0"`) while its text is clipped. So put the clipped text inside its control or `<label>` where there is one.
+
 **Why:** compact, predictable layouts that never break on long text, without hiding information.
 
 ## 5. Defaults
@@ -136,14 +141,14 @@ Every configuration input resolves through one chain, nearest first:
 
 - Read only `--kawai-*` tokens. Never hard-code colors, spacing, radii, font sizes, weights, shadows, z-indexes or durations.
 - Every themable property gets a **comp token** with a sys fallback: `var(--kawai-comp-<component>[-<part>]-<property>[-<state>], var(--kawai-sys-…))`. Comp tokens are never declared in `kawai-theme.css`.
-  - Property names: `color`, `background`, `border-color`, `border-width`, `radius`, `padding`, `gap`, `size`, `width`, `font-size`, `font-weight`, `shadow`, `focus-ring-color`, `motion-duration`, `motion-easing`. States: `hover`, `checked`, `disabled`.
+  - Property names: `color`, `background`, `border-color`, `border-width`, `radius`, `padding`, `gap`, `size`, `min-size`, `width`, `font-size`, `font-weight`, `shadow`, `focus-ring-color`, `motion-duration`, `motion-easing`. States: `hover`, `checked`, `disabled`.
   - Padding gets three tokens, the shorthand winning when set: `padding: var(--…-padding, var(--…-padding-y, <y>) var(--…-padding-x, <x>))`. One-axis padding exposes only that axis.
 - Add every new token to `src/lib/theme/tokens.ts` (`check:theme` fails otherwise). It then shows in the Storybook token gallery automatically.
 - `font-family: var(--kawai-sys-font-family)` on the host: deliberately undeclared, so components inherit the app font.
 - Logical properties (`inline-size`, `margin-inline-start`, `border-start-start-radius`) so layouts work right to left.
 - Transitions use comp `motion-*` tokens falling back to `--kawai-sys-motion-duration-*` / `-easing-*`, and are off under `@media (prefers-reduced-motion: reduce)`.
 - Use host classes for variants (`[class.separated]` in `host`), never inline styles for things apps may want to override. `[style.text-align]` for a value that is itself an option is fine.
-- Elements rendered outside the host (in `<body>`) are styled by an unlayered rule in `kawai-theme.css`, and copy the nearest `kawai-theme` attribute so they match the themed subtree.
+- Elements rendered outside the host (in `<body>`) are styled by an unlayered rule in `kawai-theme.css`, and copy the nearest `kawai-theme` attribute so they match the themed subtree. Open them as a popover (`popover="manual"`) so they sit in the top layer; no z-index tokens.
 
 **Why:** apps restyle through tokens without touching components, globally, per subtree or per instance; the library never fights app CSS.
 
@@ -152,8 +157,10 @@ Every configuration input resolves through one chain, nearest first:
 Required: AXE passes, WCAG AA (see `project-rules.md`). For components specifically:
 
 - Native elements first (`button`, radio `input`, `label`, `dl`, `table` with `th scope`), ARIA only on top.
-- Every control has an accessible name; derive related names from it (`'Decrease ' + label`).
+- Every control has an accessible name; derive related names from it. Text the library writes itself is a configuration input holding a template (`decreaseLabel: 'Decrease {label}'`), so apps can translate it through the defaults chain. Never hard-code it in the template.
+- A component that renders a heading takes its level as a configuration input (`headingLevel`, typed `KawaiHeadingLevel` from `shared/heading/`) and renders a real `h1`–`h6` with an `@switch`, since the right level depends on the page around it.
 - Controls at a limit use `aria-disabled`, not `disabled`, so they keep focus.
+- Pointer targets are at least 24px tall (WCAG 2.2 AA): `min-block-size` from a `min-size` comp token falling back to `--kawai-sys-size-target-min`, unless neighbours leave that much space around a smaller one.
 - Every interactive element has a visible `:focus-visible` outline: `--kawai-sys-focus-ring-width` and a `focus-ring-color` comp token.
 - Hidden content is out of the accessibility tree and tab order (`visibility: hidden` after a collapse animation, not just zero height).
 - Components assume they sit on `--kawai-sys-color-surface`; their text and border tokens are contrast-checked against it.
@@ -167,6 +174,7 @@ Vitest with TestBed. Render the component inside a small host component and cove
 3. **Instance input** wins over both; a `null` default can be turned back on by an instance.
 4. **Live update:** `appSignal.set(…)`, `await fixture.whenStable()`, and the change shows.
 5. **Core behaviour:** events emitted, accessible names, bounds.
+6. **Axe:** `await expectNoAxeViolations(fixture.nativeElement as HTMLElement)` from `src/lib/testing/axe.ts`.
 
 Query through `fixture.nativeElement`, throw a clear error instead of `!` when an element is missing (lint forbids `!`).
 
@@ -186,11 +194,11 @@ Query through `fixture.nativeElement`, throw a clear error instead of `!` when a
 5. Write the component: inputs without initial values for configuration, `injectKawaiDefaults()`, one `computed()` per resolved input, dev-mode warnings for missing accessible names, JSDoc.
 6. Styles: tokens only, comp tokens for themable properties, reduced motion, logical properties.
 7. Register:
-   - `src/lib/ui/components/index.ts`: export the component, model, constant (and templates directive)
+   - `src/lib/ui/components/<name>/index.ts`: export the component, model, constant (and templates directive); `src/lib/ui/components/index.ts`: add `export * from './<name>';`
    - `src/lib/defaults/kawai-defaults.ts`: add `<camelName>?: <Component>DefaultsConfig` to `KawaiDefaultsConfig`
    - `src/lib/theme/tokens.ts`: every new token
 8. Spec (section 9) and stories (section 10).
-9. Run: `npm run lint`, `npm test`, `npm run check:theme`, `ng build kawai-ui`, `npm run build-storybook`.
+9. Run: `npm run lint`, `npm test`, `npm run check:theme`, `ng build kawai-ui`, `npm run build-storybook`, `npm run test:a11y`.
 
 ## 12. Skeletons
 
@@ -398,10 +406,13 @@ describe('ExampleComponent', () => {
 **Registration**
 
 ```ts
+// src/lib/ui/components/example/index.ts
+export * from './example.component';
+export * from './example.constant';
+export * from './example.model';
+
 // src/lib/ui/components/index.ts
-export * from './example/example.component';
-export * from './example/example.constant';
-export * from './example/example.model';
+export * from './example';
 
 // src/lib/defaults/kawai-defaults.ts
 import type { ExampleDefaultsConfig } from '../ui/components/example/example.model';

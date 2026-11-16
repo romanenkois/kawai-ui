@@ -7,6 +7,7 @@ import type { AccordionDefaults } from './accordion.model';
  */
 export const KAWAI_ACCORDION_DEFAULTS: Readonly<AccordionDefaults> = {
   heading: KAWAI_LABEL_DEFAULTS,
+  headingLevel: 2,
   indicator: {
     position: 'end',
     // The component turns this off for a `kawaiAccordionIndicator` template unless a level sets it.

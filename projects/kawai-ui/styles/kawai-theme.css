@@ -57,7 +57,7 @@
     --kawai-sys-font-weight-regular: 400;
     --kawai-sys-font-weight-bold: 700;
 
-    /* sys: spacing, shape, stacking */
+    /* sys: spacing, shape */
     --kawai-sys-space-2xs: 0.125rem;
     --kawai-sys-space-xs: 0.25rem;
     --kawai-sys-space-sm: 0.375rem;
@@ -68,7 +68,8 @@
     --kawai-sys-radius-md: 0.375rem;
     --kawai-sys-border-width: 1px;
     --kawai-sys-focus-ring-width: 2px;
-    --kawai-sys-z-tooltip: 1000;
+    /* Smallest height of a pointer target: 24px, WCAG 2.2 AA (2.5.8). */
+    --kawai-sys-size-target-min: 1.5rem;
 
     /* sys: motion. Components switch transitions off under prefers-reduced-motion. */
     --kawai-sys-motion-duration-sm: 120ms;
@@ -137,11 +138,16 @@
 
 /*
  * Tooltip created by the `kawaiTooltip` directive in <body>, outside any component, so it can't
- * use component styles. The directive sets only its `left`/`top`.
+ * use component styles. It is opened as a popover, so it sits in the top layer and needs no
+ * z-index; `inset`, `margin`, `border` and `overflow` undo the browser's popover defaults. The
+ * directive sets only its `left`/`top`. It takes pointer events so it stays open while hovered.
  */
 .kawai-tooltip {
   position: fixed;
-  z-index: var(--kawai-sys-z-tooltip);
+  inset: auto;
+  margin: 0;
+  border: 0;
+  overflow: visible;
   max-inline-size: min(24rem, calc(100vw - 1rem));
   padding: var(
     --kawai-comp-tooltip-padding,
@@ -156,5 +162,14 @@
   line-height: var(--kawai-sys-line-height-tight);
   overflow-wrap: anywhere;
   box-shadow: var(--kawai-comp-tooltip-shadow, var(--kawai-sys-shadow-raised));
-  pointer-events: none;
+}
+
+/*
+ * Clipped text that `kawaiTooltip` made a tab stop so keyboard users can read it in full. The
+ * ring is drawn inside the element, so a clipping ancestor can't cut it off.
+ */
+[data-kawai-truncated]:focus-visible {
+  outline: var(--kawai-sys-focus-ring-width) solid
+    var(--kawai-comp-tooltip-focus-ring-color, var(--kawai-sys-color-primary));
+  outline-offset: calc(-1 * var(--kawai-sys-focus-ring-width));
 }

@@ -1,7 +1,11 @@
 import type { KawaiDeepPartial } from '../../../utils/options';
+import type { KawaiHeadingLevel } from '../../shared/heading/heading.model';
 import type { KawaiLabelDefaultsConfig, KawaiLabelOptions } from '../../shared/label/label.model';
 
-/** What the body does with content wider than the accordion. */
+/**
+ * What the body does with content wider than the accordion. A `scroll` body is a tab stop, so
+ * the keyboard can scroll it.
+ */
 export type AccordionOverflow = 'hidden' | 'scroll';
 
 /**
@@ -53,6 +57,7 @@ export interface AccordionLayoutOptions {
 export interface AccordionDefaults {
   heading: AccordionHeadingOptions;
   indicator: AccordionIndicatorOptions;
+  headingLevel: KawaiHeadingLevel;
   layout: AccordionLayoutOptions;
   overflow: AccordionOverflow;
 }
@@ -63,6 +68,7 @@ export interface AccordionDefaults {
  */
 export interface AccordionDefaultsConfig {
   heading?: KawaiLabelDefaultsConfig;
+  headingLevel?: KawaiHeadingLevel;
   indicator?: AccordionIndicatorPosition | KawaiDeepPartial<AccordionIndicatorOptions> | null;
   layout?: AccordionBodyLayout | KawaiDeepPartial<AccordionLayoutOptions>;
   overflow?: AccordionOverflow;

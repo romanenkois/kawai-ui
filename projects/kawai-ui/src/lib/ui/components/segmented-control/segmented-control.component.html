@@ -14,7 +14,7 @@
         [name]="name"
         [value]="option.value"
         [checked]="option.value === value()"
-        (change)="valueChange.emit(option.value)"
+        (change)="choose(option.value)"
       />
       <span [kawaiTooltip]="{ text: option.label, onlyWhenTruncated: true }">{{
         option.label

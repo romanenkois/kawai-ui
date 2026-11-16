@@ -15,6 +15,17 @@ export interface TooltipOptions {
    * linked through `aria-describedby`.
    */
   onlyWhenTruncated: boolean;
+  /**
+   * Milliseconds the pointer must rest on the host before the tooltip opens. Keyboard focus
+   * always opens it at once. `0` opens on hover at once too.
+   */
+  showDelay: number;
+  /**
+   * Milliseconds the tooltip stays after the pointer leaves the host, so the pointer can move
+   * onto the tooltip, which keeps it open (WCAG 1.4.13). Blur, Escape and scroll close it at
+   * once.
+   */
+  hideDelay: number;
 }
 
 /**

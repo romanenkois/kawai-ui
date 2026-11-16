@@ -11,6 +11,11 @@ const meta: Meta<InfoPanelComponent> = {
   ],
   args: { linkClicked: fn() },
   argTypes: {
+    titleLevel: {
+      description: 'Heading element of `title` items: `3` is `<h3>`.',
+      control: 'inline-radio',
+      options: [1, 2, 3, 4, 5, 6],
+    },
     linksOverflow: {
       description: 'Panel default for fields without their own `linksOverflow`.',
       control: 'inline-radio',
@@ -54,7 +59,10 @@ const ALL_ITEMS: InfoItem[] = [
 /** Every item type in one panel. */
 export const AllItemTypes: Story = { args: { items: ALL_ITEMS } };
 
-/** Text that does not fit is truncated; hover or focus it to see the full value in a tooltip. */
+/**
+ * Text that does not fit is truncated; hover it to see the full value in a tooltip. Clipped
+ * text is also a tab stop, so the keyboard reaches it too.
+ */
 export const Truncation: Story = {
   args: {
     items: [

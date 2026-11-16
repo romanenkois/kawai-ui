@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { KawaiDefaultsConfig, provideKawaiDefaults } from '../../../defaults/kawai-defaults';
+import { expectNoAxeViolations } from '../../../testing/axe';
 import { SegmentedControlComponent } from './segmented-control.component';
 import { SegmentedOption } from './segmented-control.model';
 
@@ -68,9 +69,25 @@ describe('SegmentedControlComponent', () => {
     expect(group?.getAttribute('aria-labelledby')).toBe(label('plain').id);
   });
 
+  it('keeps the checked radio on `value` when the parent turns a change down', async () => {
+    // `own` has a fixed value and no handler.
+    const [list, grid] = Array.from(control('own').querySelectorAll('input'));
+    list.click();
+    await fixture.whenStable();
+    expect(list.checked).toBe(false);
+    expect(grid.checked).toBe(true);
+  });
+
+  it('has no axe violations', async () => {
+    await expectNoAxeViolations(fixture.nativeElement as HTMLElement);
+  });
+
   it('emits the chosen option', async () => {
     control('plain').querySelectorAll('input')[1].click();
     await fixture.whenStable();
     expect(fixture.componentInstance.value()).toBe('grid');
+    const [list, grid] = Array.from(control('plain').querySelectorAll('input'));
+    expect(list.checked).toBe(false);
+    expect(grid.checked).toBe(true);
   });
 });

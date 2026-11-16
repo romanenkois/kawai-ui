@@ -1,7 +1,38 @@
 @for (item of items(); track $index) {
   @switch (item.type) {
     @case ('title') {
-      <h3 [kawaiTooltip]="{ text: item.text, onlyWhenTruncated: true }">{{ item.text }}</h3>
+      @switch (titleLevelValue()) {
+        @case (1) {
+          <h1 class="title" [kawaiTooltip]="{ text: item.text, onlyWhenTruncated: true }">
+            {{ item.text }}
+          </h1>
+        }
+        @case (2) {
+          <h2 class="title" [kawaiTooltip]="{ text: item.text, onlyWhenTruncated: true }">
+            {{ item.text }}
+          </h2>
+        }
+        @case (3) {
+          <h3 class="title" [kawaiTooltip]="{ text: item.text, onlyWhenTruncated: true }">
+            {{ item.text }}
+          </h3>
+        }
+        @case (4) {
+          <h4 class="title" [kawaiTooltip]="{ text: item.text, onlyWhenTruncated: true }">
+            {{ item.text }}
+          </h4>
+        }
+        @case (5) {
+          <h5 class="title" [kawaiTooltip]="{ text: item.text, onlyWhenTruncated: true }">
+            {{ item.text }}
+          </h5>
+        }
+        @case (6) {
+          <h6 class="title" [kawaiTooltip]="{ text: item.text, onlyWhenTruncated: true }">
+            {{ item.text }}
+          </h6>
+        }
+      }
     }
     @case ('simple-text') {
       <p [class.muted]="item.muted" [kawaiTooltip]="{ text: item.text, onlyWhenTruncated: true }">
@@ -10,14 +41,14 @@
     }
     @case ('fields') {
       <dl>
-        @for (field of item.fields; track field.label) {
+        @for (field of item.fields; track $index) {
           <dt [kawaiTooltip]="{ text: field.label, onlyWhenTruncated: true }">{{ field.label }}</dt>
           @if (field.links?.length) {
             <dd
               class="links"
               [class.scroll]="(field.linksOverflow ?? linksOverflowValue()) === 'scroll'"
             >
-              @for (link of field.links; track link.value) {
+              @for (link of field.links; track $index) {
                 <button type="button" (click)="linkClicked.emit(link)">{{ link.text }}</button>
               }
             </dd>

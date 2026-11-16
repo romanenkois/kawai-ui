@@ -5,7 +5,7 @@
 }
 
 /* Every text container truncates to one line; the tooltip shows the full text. */
-h3,
+.title,
 p,
 dt,
 dd,
@@ -18,14 +18,14 @@ button {
   white-space: nowrap;
 }
 
-h3 {
+.title {
   margin: var(--kawai-sys-space-md) 0 var(--kawai-sys-space-xs);
   font: inherit;
   font-weight: var(--kawai-sys-font-weight-bold);
   color: var(--kawai-comp-info-panel-title-color, var(--kawai-sys-color-secondary));
 }
 
-h3:first-child {
+.title:first-child {
   margin-block-start: 0;
 }
 
@@ -37,8 +37,10 @@ p {
   color: var(--kawai-comp-info-panel-note-color, var(--kawai-sys-color-text-muted));
 }
 
+/* Baseline, so a label lines up with the text of the first row of link buttons beside it. */
 dl {
   display: grid;
+  align-items: baseline;
   grid-template-columns: fit-content(50%) minmax(0, 1fr);
   gap: 0 var(--kawai-comp-info-panel-field-gap, var(--kawai-sys-space-lg));
   margin: 0;
@@ -101,7 +103,9 @@ tfoot td {
 }
 
 button {
+  box-sizing: border-box;
   max-inline-size: 100%;
+  min-block-size: var(--kawai-comp-info-panel-button-min-size, var(--kawai-sys-size-target-min));
   padding: var(
     --kawai-comp-info-panel-button-padding,
     var(--kawai-comp-info-panel-button-padding-y, 0)

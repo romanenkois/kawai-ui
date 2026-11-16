@@ -1,3 +1,5 @@
+import type { KawaiHeadingLevel } from '../../shared/heading/heading.model';
+
 /** How a list of links too wide for its field behaves: wrap onto more lines, or scroll on one. */
 export type InfoPanelLinksOverflow = 'wrap' | 'scroll';
 
@@ -62,6 +64,7 @@ export type InfoItem =
 /** The info panel's configuration with every value filled in: the shape of its library defaults. */
 export interface InfoPanelDefaults {
   linksOverflow: InfoPanelLinksOverflow;
+  titleLevel: KawaiHeadingLevel;
 }
 
 /**
@@ -70,4 +73,5 @@ export interface InfoPanelDefaults {
  */
 export interface InfoPanelDefaultsConfig {
   linksOverflow?: InfoPanelLinksOverflow;
+  titleLevel?: KawaiHeadingLevel;
 }

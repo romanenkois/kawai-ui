@@ -1,4 +1,25 @@
-<h2 [id]="headingId">
+<!-- The heading element can't be bound, so each level wraps the same header button. -->
+@switch (headingLevelValue()) {
+  @case (1) {
+    <h1 class="heading" [id]="headingId"><ng-container [ngTemplateOutlet]="header" /></h1>
+  }
+  @case (2) {
+    <h2 class="heading" [id]="headingId"><ng-container [ngTemplateOutlet]="header" /></h2>
+  }
+  @case (3) {
+    <h3 class="heading" [id]="headingId"><ng-container [ngTemplateOutlet]="header" /></h3>
+  }
+  @case (4) {
+    <h4 class="heading" [id]="headingId"><ng-container [ngTemplateOutlet]="header" /></h4>
+  }
+  @case (5) {
+    <h5 class="heading" [id]="headingId"><ng-container [ngTemplateOutlet]="header" /></h5>
+  }
+  @case (6) {
+    <h6 class="heading" [id]="headingId"><ng-container [ngTemplateOutlet]="header" /></h6>
+  }
+}
+<ng-template #header>
   <button
     type="button"
     [class.indicator-start]="indicatorOptions()?.position === 'start'"
@@ -44,10 +65,18 @@
       </span>
     }
   </button>
-</h2>
+</ng-template>
 <div class="panel" [class.expanded]="expanded()">
   <div class="clip">
-    <div class="body" [class.scroll]="overflowValue() === 'scroll'" [id]="bodyId">
+    <!-- A scrolling body is a named tab stop, so the keyboard can scroll it. -->
+    <div
+      class="body"
+      [class.scroll]="bodyScrolls()"
+      [id]="bodyId"
+      [attr.tabindex]="bodyScrolls() ? 0 : null"
+      [attr.role]="bodyScrolls() ? 'group' : null"
+      [attr.aria-labelledby]="bodyScrolls() ? headingId : null"
+    >
       @if (bodyRendered()) {
         <ng-container
           [ngTemplateOutlet]="bodyTemplate().template"

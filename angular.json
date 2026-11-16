@@ -74,6 +74,105 @@
           }
         }
       }
+    },
+    "playground": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss",
+          "skipTests": true
+        },
+        "@schematics/angular:class": {
+          "skipTests": true
+        },
+        "@schematics/angular:directive": {
+          "skipTests": true
+        },
+        "@schematics/angular:guard": {
+          "skipTests": true
+        },
+        "@schematics/angular:interceptor": {
+          "skipTests": true
+        },
+        "@schematics/angular:pipe": {
+          "skipTests": true
+        },
+        "@schematics/angular:resolver": {
+          "skipTests": true
+        },
+        "@schematics/angular:service": {
+          "skipTests": true
+        }
+      },
+      "root": "projects/playground",
+      "sourceRoot": "projects/playground/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/playground/src/main.ts",
+            "tsConfig": "projects/playground/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/playground/public"
+              }
+            ],
+            "styles": [
+              "projects/kawai-ui/styles/kawai-theme.css",
+              "projects/playground/src/styles.scss"
+            ],
+            "define": {
+              "KAWAI_UI_MODE": "\"source\""
+            }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
+            "built": {
+              "tsConfig": "projects/playground/tsconfig.app.built.json",
+              "styles": [
+                "dist/kawai-ui/styles/kawai-theme.css",
+                "projects/playground/src/styles.scss"
+              ],
+              "define": {
+                "KAWAI_UI_MODE": "\"built\""
+              }
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "playground:build:production"
+            },
+            "development": {
+              "buildTarget": "playground:build:development"
+            },
+            "built": {
+              "buildTarget": "playground:build:development,built"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
     }
   }
 }

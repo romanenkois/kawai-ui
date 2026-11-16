@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { KawaiDefaultsConfig, provideKawaiDefaults } from '../../../defaults/kawai-defaults';
+import { expectNoAxeViolations } from '../../../testing/axe';
 import { NumberStepperComponent } from './number-stepper.component';
 
 /** A local level under the app level, plus instances with and without label options. */
@@ -20,6 +21,7 @@ import { NumberStepperComponent } from './number-stepper.component';
     <kawai-number-stepper
       id="own"
       [label]="{ text: 'Count', align: 'center' }"
+      increaseLabel="More {label}"
       [value]="5"
       [min]="0"
       [max]="5"
@@ -74,6 +76,23 @@ describe('NumberStepperComponent', () => {
     increase.click();
     await fixture.whenStable();
     expect(fixture.componentInstance.value()).toBe(3);
+  });
+
+  it('names the buttons from translated templates, nearest level first', async () => {
+    appDefaults.set({
+      numberStepper: { decreaseLabel: '{label} verringern', increaseLabel: '{label} erhöhen' },
+    });
+    await fixture.whenStable();
+    const names = (id: string): (string | null)[] =>
+      Array.from(stepper(id).querySelectorAll('button')).map((button) =>
+        button.getAttribute('aria-label'),
+      );
+    expect(names('plain')).toEqual(['Quantity verringern', 'Quantity erhöhen']); // app level
+    expect(names('own')).toEqual(['Count verringern', 'More Count']); // instance wins
+  });
+
+  it('has no axe violations', async () => {
+    await expectNoAxeViolations(fixture.nativeElement as HTMLElement);
   });
 
   it('marks the button at a bound aria-disabled', () => {

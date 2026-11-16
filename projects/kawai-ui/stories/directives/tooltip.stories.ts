@@ -6,12 +6,14 @@ import { TooltipDirective, type TooltipPosition } from '../../src/public-api';
 interface Args {
   text: string;
   position: TooltipPosition;
+  showDelay: number;
+  hideDelay: number;
 }
 
 const meta: Meta<Args> = {
   title: 'Directives/Tooltip',
   decorators: [moduleMetadata({ imports: [TooltipDirective] })],
-  args: { text: 'Saves the current draft', position: 'bottom' },
+  args: { text: 'Saves the current draft', position: 'bottom', showDelay: 300, hideDelay: 100 },
   argTypes: {
     text: { description: '`text`, or the whole `kawaiTooltip` value as a shorthand.' },
     position: {
@@ -19,17 +21,28 @@ const meta: Meta<Args> = {
       control: 'inline-radio',
       options: ['top', 'bottom', 'left', 'right'],
     },
+    showDelay: {
+      description:
+        '`showDelay`: milliseconds of hover before it opens. Keyboard focus opens at once.',
+    },
+    hideDelay: {
+      description:
+        '`hideDelay`: milliseconds it stays after the pointer leaves, so the pointer can move onto it.',
+    },
   },
   parameters: { layout: 'centered' },
 };
 export default meta;
 type Story = StoryObj<Args>;
 
-/** Shown on hover and keyboard focus; hidden on leave, blur, Escape and scroll. */
+/**
+ * Shown on hover (after `showDelay`) and on keyboard focus; stays open while the pointer is on
+ * the tooltip itself; hidden on leave (after `hideDelay`), blur, Escape and scroll.
+ */
 export const Default: Story = {
   render: (args) => ({
     props: args,
-    template: `<button type="button" [kawaiTooltip]="{ text, position }">Save</button>`,
+    template: `<button type="button" [kawaiTooltip]="{ text, position, showDelay, hideDelay }">Save</button>`,
   }),
 };
 
@@ -42,7 +55,8 @@ export const Shorthand: Story = {
 
 /**
  * With `onlyWhenTruncated: true`, the tooltip only opens when the host's text is cut off.
- * The first line fits, so it shows no tooltip; the second is truncated, so it does.
+ * The first line fits, so it shows no tooltip; the second is truncated, so it does, and it is
+ * a tab stop so the keyboard can open it too.
  */
 export const OnlyWhenTruncated: Story = {
   render: (args) => ({

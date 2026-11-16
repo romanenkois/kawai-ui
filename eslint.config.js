@@ -14,7 +14,8 @@ const SIGNAL_FACTORIES =
 
 module.exports = defineConfig([
   // Build output and caches, never source.
-  { ignores: ['dist/', 'out-tsc/', '.angular/', 'coverage/'] },
+  // The playground is a sandbox: it only has to build.
+  { ignores: ['dist/', 'out-tsc/', '.angular/', 'coverage/', 'projects/playground/'] },
   {
     files: ['**/*.ts'],
     extends: [

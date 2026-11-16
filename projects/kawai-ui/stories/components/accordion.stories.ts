@@ -17,6 +17,7 @@ import {
   type AccordionLayoutOptions,
   type AccordionOverflow,
   type KawaiDeepPartial,
+  type KawaiHeadingLevel,
   type KawaiLabelAlign,
   type TooltipPosition,
   provideKawaiDefaults,
@@ -28,6 +29,7 @@ interface Args {
   headingTruncate: boolean;
   headingTooltip: TooltipPosition | 'none';
   headingAlign: KawaiLabelAlign;
+  headingLevel: KawaiHeadingLevel;
   indicatorPosition: 'start' | 'end' | 'none';
   indicatorRotate: 'default' | 'on' | 'off';
   layoutBody: AccordionLayoutOptions['body'];
@@ -77,6 +79,7 @@ function render(inner: string): NonNullable<Meta<Args>['render']> {
     template: `
       <kawai-accordion
         [heading]="heading"
+        [headingLevel]="headingLevel"
         [indicator]="indicator"
         [layout]="layout"
         [expanded]="expanded"
@@ -103,6 +106,7 @@ const meta: Meta<Args> = {
     headingTruncate: true,
     headingTooltip: 'bottom',
     headingAlign: 'start',
+    headingLevel: 2,
     indicatorPosition: 'end',
     indicatorRotate: 'default',
     layoutBody: 'attached',
@@ -125,6 +129,11 @@ const meta: Meta<Args> = {
       description: '`heading.align` within the header.',
       control: 'inline-radio',
       options: ['start', 'center', 'end'],
+    },
+    headingLevel: {
+      description: 'Heading element around the header button: `2` is `<h2>`.',
+      control: 'inline-radio',
+      options: [1, 2, 3, 4, 5, 6],
     },
     indicatorPosition: {
       description: '`indicator.position`; `none` is `indicator: null`.',

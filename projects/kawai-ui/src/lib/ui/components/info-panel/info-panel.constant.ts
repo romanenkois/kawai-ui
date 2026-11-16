@@ -7,4 +7,5 @@ import type { InfoPanelDefaults } from './info-panel.model';
  */
 export const KAWAI_INFO_PANEL_DEFAULTS: Readonly<InfoPanelDefaults> = {
   linksOverflow: 'wrap',
+  titleLevel: 3,
 };

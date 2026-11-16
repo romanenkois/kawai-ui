@@ -1,0 +1,9 @@
+/* Built mode (`--configuration built`): `kawai-ui` is the ng-packagr output in dist/. */
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "paths": {
+      "kawai-ui": ["../../dist/kawai-ui"]
+    }
+  }
+}

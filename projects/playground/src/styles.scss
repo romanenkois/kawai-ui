@@ -1,0 +1,28 @@
+/* App styles only. The kawai-ui theme stylesheet is added per build mode in angular.json. */
+body {
+  margin: 0;
+  background: var(--kawai-sys-color-surface);
+  color: var(--kawai-sys-color-text);
+  font-family: system-ui, sans-serif;
+}
+
+/* Shared by every page in app/pages. */
+.page {
+  display: grid;
+  gap: var(--kawai-sys-space-xl);
+  max-inline-size: 36rem;
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.note {
+  color: var(--kawai-sys-color-text-muted);
+  font-size: var(--kawai-sys-font-size-md);
+}

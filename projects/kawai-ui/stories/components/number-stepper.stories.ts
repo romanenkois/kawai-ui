@@ -1,7 +1,12 @@
-import { componentWrapperDecorator, type Meta, type StoryObj } from '@storybook/angular';
+import {
+  applicationConfig,
+  componentWrapperDecorator,
+  type Meta,
+  type StoryObj,
+} from '@storybook/angular';
 import { fn } from 'storybook/test';
 
-import { NumberStepperComponent } from '../../src/public-api';
+import { NumberStepperComponent, provideKawaiDefaults } from '../../src/public-api';
 import {
   LABEL_ARGS,
   LABEL_ARG_TYPES,
@@ -13,6 +18,8 @@ interface Args extends LabelArgs {
   value: number;
   min: number;
   max: number;
+  decreaseLabel: string;
+  increaseLabel: string;
   /** Story only: `--kawai-comp-number-stepper-label-width`. */
   labelWidth: string;
   valueChange: (value: number) => void;
@@ -30,11 +37,21 @@ const meta: Meta<Args> = {
     value: 3,
     min: 0,
     max: 10,
+    decreaseLabel: '',
+    increaseLabel: '',
     labelWidth: '',
     valueChange: fn(),
   },
   argTypes: {
     ...LABEL_ARG_TYPES,
+    decreaseLabel: {
+      description:
+        'Accessible name of the − button; `{label}` becomes the label text. Empty keeps the default (`Decrease {label}`).',
+    },
+    increaseLabel: {
+      description:
+        'Accessible name of the + button; `{label}` becomes the label text. Empty keeps the default (`Increase {label}`).',
+    },
     labelWidth: {
       description:
         'Story only: `--kawai-comp-number-stepper-label-width`, e.g. `6rem`. Empty keeps the default (fits the text).',
@@ -50,6 +67,8 @@ const meta: Meta<Args> = {
         [value]="value"
         [min]="min"
         [max]="max"
+        [decreaseLabel]="decreaseLabel || undefined"
+        [increaseLabel]="increaseLabel || undefined"
         (valueChange)="value = $event; valueChange($event)"
       />
     `,
@@ -73,4 +92,21 @@ export const LongLabel: Story = {
 /** With a fixed label width (a token), `label.align` aligns the text within it. */
 export const AlignedLabel: Story = {
   args: { labelWidth: '7rem', labelAlign: 'end' },
+};
+
+/**
+ * The button names are templates, so an app can translate them once with
+ * `provideKawaiDefaults()`. `{label}` is replaced with the label text.
+ */
+export const TranslatedButtonNames: Story = {
+  args: { labelText: 'Anzahl' },
+  decorators: [
+    applicationConfig({
+      providers: [
+        provideKawaiDefaults({
+          numberStepper: { decreaseLabel: '{label} verringern', increaseLabel: '{label} erhöhen' },
+        }),
+      ],
+    }),
+  ],
 };

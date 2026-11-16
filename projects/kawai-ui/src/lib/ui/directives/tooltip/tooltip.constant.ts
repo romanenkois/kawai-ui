@@ -8,4 +8,6 @@ export const KAWAI_TOOLTIP_DEFAULTS: Readonly<TooltipOptions> = {
   text: '',
   position: 'bottom',
   onlyWhenTruncated: false,
+  showDelay: 300,
+  hideDelay: 100,
 };

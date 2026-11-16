@@ -6,5 +6,5 @@
     "allowSyntheticDefaultImports": true
   },
   "include": ["../src/**/*.ts", "../stories/**/*.ts", "./preview.ts"],
-  "exclude": ["../src/**/*.spec.ts"]
+  "exclude": ["../src/**/*.spec.ts", "../src/lib/testing/**"]
 }

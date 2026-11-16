@@ -32,6 +32,9 @@
     },
     {
       "path": "./projects/kawai-ui/.storybook/tsconfig.json"
+    },
+    {
+      "path": "./projects/playground/tsconfig.app.json"
     }
   ]
 }

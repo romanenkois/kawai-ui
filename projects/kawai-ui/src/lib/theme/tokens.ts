@@ -68,7 +68,7 @@ export const KAWAI_SYS_TOKENS = [
   '--kawai-sys-radius-md',
   '--kawai-sys-border-width',
   '--kawai-sys-focus-ring-width',
-  '--kawai-sys-z-tooltip',
+  '--kawai-sys-size-target-min',
   '--kawai-sys-motion-duration-sm',
   '--kawai-sys-motion-duration-md',
   '--kawai-sys-motion-duration-lg',
@@ -108,6 +108,7 @@ export const KAWAI_COMP_TOKENS = [
   '--kawai-comp-info-panel-button-padding-x',
   '--kawai-comp-info-panel-button-border-color',
   '--kawai-comp-info-panel-button-radius',
+  '--kawai-comp-info-panel-button-min-size',
   '--kawai-comp-info-panel-button-color',
   '--kawai-comp-info-panel-button-color-hover',
   '--kawai-comp-info-panel-button-background-hover',
@@ -155,6 +156,7 @@ export const KAWAI_COMP_TOKENS = [
   '--kawai-comp-tooltip-padding-x',
   '--kawai-comp-tooltip-font-size',
   '--kawai-comp-tooltip-shadow',
+  '--kawai-comp-tooltip-focus-ring-color',
 ] as const;
 
 export type KawaiRefToken = (typeof KAWAI_REF_TOKENS)[number];

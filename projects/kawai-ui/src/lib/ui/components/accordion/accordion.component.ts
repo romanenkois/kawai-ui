@@ -16,6 +16,7 @@ import { injectKawaiDefaults } from '../../../defaults/kawai-defaults';
 import { KawaiDeepPartial, resolveOptionsChain, resolveValueChain } from '../../../utils/options';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
 import { TooltipOptions } from '../../directives/tooltip/tooltip.model';
+import { KawaiHeadingLevel } from '../../shared/heading/heading.model';
 import { labelTooltip } from '../../shared/label/label.util';
 import {
   AccordionBodyDirective,
@@ -37,7 +38,7 @@ import { KAWAI_ACCORDION_DEFAULTS } from './accordion.constant';
 let nextId = 0;
 
 /**
- * Collapsible section with a header button. Stateless: the parent owns `expanded` and reacts
+ * Collapsible section with a header button inside a heading (`headingLevel`). Stateless: the parent owns `expanded` and reacts
  * to `toggled`. The body is an `<ng-template kawaiAccordionBody>`; it renders on first expand,
  * then stays so expanding and collapsing can animate its height (instant with reduced motion).
  *
@@ -64,6 +65,11 @@ let nextId = 0;
 export class AccordionComponent {
   /** Heading text, or {@link AccordionHeadingOptions}. Optional with a heading template. */
   readonly heading = input<string | KawaiDeepPartial<AccordionHeadingOptions>>();
+  /**
+   * Level of the heading element around the header button: `2` renders `<h2>`. Set it to fit
+   * the page outline where the accordion sits. Default `2`.
+   */
+  readonly headingLevel = input<KawaiHeadingLevel>();
   /** Indicator position, {@link AccordionIndicatorOptions}, or `null` for no indicator. */
   readonly indicator = input<
     AccordionIndicatorPosition | KawaiDeepPartial<AccordionIndicatorOptions> | null
@@ -96,6 +102,12 @@ export class AccordionComponent {
       'text',
     ),
   );
+  protected readonly headingLevelValue = computed<KawaiHeadingLevel>(() =>
+    resolveValueChain(
+      [...this.defaults().map((level) => level?.headingLevel), this.headingLevel()],
+      KAWAI_ACCORDION_DEFAULTS.headingLevel,
+    ),
+  );
   protected readonly indicatorOptions = computed<AccordionIndicatorOptions | null>(() =>
     resolveOptionsChain(
       [...this.defaults().map((level) => level?.indicator), this.indicator()],
@@ -117,6 +129,7 @@ export class AccordionComponent {
       KAWAI_ACCORDION_DEFAULTS.overflow,
     ),
   );
+  protected readonly bodyScrolls = computed<boolean>(() => this.overflowValue() === 'scroll');
   /** Full-text tooltip for a truncated text heading. */
   protected readonly labelTooltip = computed<KawaiDeepPartial<TooltipOptions> | null>(() =>
     labelTooltip(this.headingOptions()),

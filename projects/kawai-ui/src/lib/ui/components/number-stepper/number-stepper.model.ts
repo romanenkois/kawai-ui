@@ -3,6 +3,13 @@ import type { KawaiLabelDefaultsConfig, KawaiLabelOptions } from '../../shared/l
 /** The stepper's configuration with every value filled in: the shape of its library defaults. */
 export interface NumberStepperDefaults {
   label: KawaiLabelOptions;
+  /**
+   * Accessible name of the − button. `{label}` is replaced with the label text, so a
+   * translation can put it anywhere: `'{label} verringern'`.
+   */
+  decreaseLabel: string;
+  /** Accessible name of the + button. `{label}` is replaced with the label text. */
+  increaseLabel: string;
 }
 
 /**
@@ -11,4 +18,6 @@ export interface NumberStepperDefaults {
  */
 export interface NumberStepperDefaultsConfig {
   label?: KawaiLabelDefaultsConfig;
+  decreaseLabel?: string;
+  increaseLabel?: string;
 }

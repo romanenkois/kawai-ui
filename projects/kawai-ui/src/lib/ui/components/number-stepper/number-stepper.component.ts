@@ -1,12 +1,15 @@
 import { Component, computed, effect, input, isDevMode, output } from '@angular/core';
 
 import { injectKawaiDefaults } from '../../../defaults/kawai-defaults';
-import { KawaiDeepPartial, resolveOptionsChain } from '../../../utils/options';
+import { KawaiDeepPartial, resolveOptionsChain, resolveValueChain } from '../../../utils/options';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
 import { TooltipOptions } from '../../directives/tooltip/tooltip.model';
 import { KawaiLabelOptions } from '../../shared/label/label.model';
 import { labelTooltip } from '../../shared/label/label.util';
 import { KAWAI_NUMBER_STEPPER_DEFAULTS } from './number-stepper.constant';
+
+/** Stands for the label text in `decreaseLabel` and `increaseLabel`. */
+const LABEL_PLACEHOLDER = '{label}';
 
 let nextId = 0;
 
@@ -16,8 +19,9 @@ let nextId = 0;
  * `min`..`max`; anything else is left in the field until blur, which restores `value`.
  * The buttons use `aria-disabled` at the bounds so they keep focus while clicking.
  *
- * `label` takes the text or {@link KawaiLabelOptions}; options left out come from
- * `provideKawaiDefaults()` levels, then `KAWAI_NUMBER_STEPPER_DEFAULTS`.
+ * `label` takes the text or {@link KawaiLabelOptions}. `decreaseLabel` and `increaseLabel` name
+ * the buttons, for translation. Configuration left out comes from `provideKawaiDefaults()`
+ * levels, then `KAWAI_NUMBER_STEPPER_DEFAULTS`.
  */
 @Component({
   selector: 'kawai-number-stepper',
@@ -28,6 +32,16 @@ let nextId = 0;
 export class NumberStepperComponent {
   /** Label text, or {@link KawaiLabelOptions}. Its text also names the field and buttons. */
   readonly label = input.required<string | KawaiDeepPartial<KawaiLabelOptions>>();
+  /**
+   * Accessible name of the − button; `{label}` is replaced with the label text. Default
+   * `Decrease {label}`.
+   */
+  readonly decreaseLabel = input<string>();
+  /**
+   * Accessible name of the + button; `{label}` is replaced with the label text. Default
+   * `Increase {label}`.
+   */
+  readonly increaseLabel = input<string>();
   readonly value = input.required<number>();
   readonly min = input.required<number>();
   readonly max = input.required<number>();
@@ -44,6 +58,24 @@ export class NumberStepperComponent {
   /** Full-text tooltip for a truncated label. */
   protected readonly labelTooltip = computed<KawaiDeepPartial<TooltipOptions> | null>(() =>
     labelTooltip(this.labelOptions()),
+  );
+  protected readonly decreaseName = computed<string>(() =>
+    resolveValueChain(
+      [
+        ...this.defaultLevels().map((level) => level.numberStepper?.decreaseLabel),
+        this.decreaseLabel(),
+      ],
+      KAWAI_NUMBER_STEPPER_DEFAULTS.decreaseLabel,
+    ).replaceAll(LABEL_PLACEHOLDER, this.labelOptions().text),
+  );
+  protected readonly increaseName = computed<string>(() =>
+    resolveValueChain(
+      [
+        ...this.defaultLevels().map((level) => level.numberStepper?.increaseLabel),
+        this.increaseLabel(),
+      ],
+      KAWAI_NUMBER_STEPPER_DEFAULTS.increaseLabel,
+    ).replaceAll(LABEL_PLACEHOLDER, this.labelOptions().text),
   );
 
   protected readonly inputId = `kawai-number-stepper-${nextId++}`;
