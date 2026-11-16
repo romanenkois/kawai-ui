@@ -1,23 +1,23 @@
 :host {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--kawai-comp-segmented-control-gap, var(--kawai-sys-space-xs));
+  font-family: var(--kawai-sys-font-family);
+}
+
+/* `label.position: 'start'`: the label in its own column, beside the control. */
+:host(.label-start) {
   grid-template-columns: var(--kawai-comp-segmented-control-label-width, fit-content(50%)) minmax(
       0,
       1fr
     );
   gap: 0 var(--kawai-comp-segmented-control-gap, var(--kawai-sys-space-lg));
   align-items: center;
-  font-family: var(--kawai-sys-font-family);
 }
 
 .label {
   min-inline-size: 0;
   color: var(--kawai-comp-segmented-control-label-color, var(--kawai-sys-color-text-muted));
-}
-
-.label.truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .options {

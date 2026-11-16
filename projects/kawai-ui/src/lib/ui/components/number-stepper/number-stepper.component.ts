@@ -1,11 +1,10 @@
 import { Component, computed, effect, input, isDevMode, output } from '@angular/core';
 
 import { injectKawaiDefaults } from '../../../defaults/kawai-defaults';
-import { KawaiDeepPartial, resolveOptionsChain, resolveValueChain } from '../../../utils/options';
-import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
-import { TooltipOptions } from '../../directives/tooltip/tooltip.model';
-import { KawaiLabelOptions } from '../../shared/label/label.model';
-import { labelTooltip } from '../../shared/label/label.util';
+import { KawaiDeepPartial, resolveValueChain } from '../../../utils/options';
+import { LabelDirective } from '../../directives/label/label.directive';
+import { KawaiLabelOptions } from '../../directives/label/label.model';
+import { resolveLabelChain } from '../../directives/label/label.util';
 import { KAWAI_NUMBER_STEPPER_DEFAULTS } from './number-stepper.constant';
 
 /** Stands for the label text in `decreaseLabel` and `increaseLabel`. */
@@ -19,13 +18,15 @@ let nextId = 0;
  * `min`..`max`; anything else is left in the field until blur, which restores `value`.
  * The buttons use `aria-disabled` at the bounds so they keep focus while clicking.
  *
- * `label` takes the text or {@link KawaiLabelOptions}. `decreaseLabel` and `increaseLabel` name
+ * `label` takes the text or {@link KawaiLabelOptions}; it sits above the field, or beside it
+ * with `position: 'start'`. `decreaseLabel` and `increaseLabel` name
  * the buttons, for translation. Configuration left out comes from `provideKawaiDefaults()`
  * levels, then `KAWAI_NUMBER_STEPPER_DEFAULTS`.
  */
 @Component({
   selector: 'kawai-number-stepper',
-  imports: [TooltipDirective],
+  host: { '[class.label-start]': "labelOptions().position === 'start'" },
+  imports: [LabelDirective],
   templateUrl: './number-stepper.component.html',
   styleUrl: './number-stepper.component.scss',
 })
@@ -49,15 +50,12 @@ export class NumberStepperComponent {
 
   private readonly defaultLevels = injectKawaiDefaults();
   protected readonly labelOptions = computed<KawaiLabelOptions>(() =>
-    resolveOptionsChain(
-      [...this.defaultLevels().map((level) => level.numberStepper?.label), this.label()],
+    resolveLabelChain(
+      this.defaultLevels(),
+      (level) => level.numberStepper?.label,
+      this.label(),
       KAWAI_NUMBER_STEPPER_DEFAULTS.label,
-      'text',
     ),
-  );
-  /** Full-text tooltip for a truncated label. */
-  protected readonly labelTooltip = computed<KawaiDeepPartial<TooltipOptions> | null>(() =>
-    labelTooltip(this.labelOptions()),
   );
   protected readonly decreaseName = computed<string>(() =>
     resolveValueChain(

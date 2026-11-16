@@ -1,6 +1,9 @@
 import type { KawaiDeepPartial } from '../../../utils/options';
 import type { KawaiHeadingLevel } from '../../shared/heading/heading.model';
-import type { KawaiLabelDefaultsConfig, KawaiLabelOptions } from '../../shared/label/label.model';
+import type {
+  KawaiLabelDefaultsConfig,
+  KawaiLabelOptions,
+} from '../../directives/label/label.model';
 
 /**
  * What the body does with content wider than the accordion. A `scroll` body is a tab stop, so

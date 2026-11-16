@@ -14,10 +14,9 @@ import {
 
 import { injectKawaiDefaults } from '../../../defaults/kawai-defaults';
 import { KawaiDeepPartial, resolveOptionsChain, resolveValueChain } from '../../../utils/options';
-import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
-import { TooltipOptions } from '../../directives/tooltip/tooltip.model';
+import { LabelDirective } from '../../directives/label/label.directive';
 import { KawaiHeadingLevel } from '../../shared/heading/heading.model';
-import { labelTooltip } from '../../shared/label/label.util';
+import { resolveLabelChain } from '../../directives/label/label.util';
 import {
   AccordionBodyDirective,
   AccordionHeadingDirective,
@@ -50,7 +49,7 @@ let nextId = 0;
  */
 @Component({
   selector: 'kawai-accordion',
-  imports: [NgTemplateOutlet, TooltipDirective],
+  imports: [NgTemplateOutlet, LabelDirective],
   host: {
     role: 'region',
     '[attr.aria-labelledby]': 'headingId',
@@ -96,10 +95,11 @@ export class AccordionComponent {
   );
 
   protected readonly headingOptions = computed<AccordionHeadingOptions>(() =>
-    resolveOptionsChain(
-      [...this.defaults().map((level) => level?.heading), this.heading()],
+    resolveLabelChain(
+      this.defaultLevels(),
+      (level) => level.accordion?.heading,
+      this.heading(),
       KAWAI_ACCORDION_DEFAULTS.heading,
-      'text',
     ),
   );
   protected readonly headingLevelValue = computed<KawaiHeadingLevel>(() =>
@@ -130,10 +130,6 @@ export class AccordionComponent {
     ),
   );
   protected readonly bodyScrolls = computed<boolean>(() => this.overflowValue() === 'scroll');
-  /** Full-text tooltip for a truncated text heading. */
-  protected readonly labelTooltip = computed<KawaiDeepPartial<TooltipOptions> | null>(() =>
-    labelTooltip(this.headingOptions()),
-  );
   /** With a heading template, the heading text labels the button; otherwise its content does. */
   protected readonly buttonLabel = computed<string | null>(() => {
     const { text } = this.headingOptions();

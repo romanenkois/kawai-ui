@@ -5,10 +5,18 @@ import { KawaiDefaultsConfig, provideKawaiDefaults } from '../../../defaults/kaw
 import { expectNoAxeViolations } from '../../../testing/axe';
 import { NumberStepperComponent } from './number-stepper.component';
 
-/** A local level under the app level, plus instances with and without label options. */
+/**
+ * A local level under the app level, plus instances with and without label options. The local
+ * level also sets the shared `label` key, which every component key beats.
+ */
 @Component({
   imports: [NumberStepperComponent],
-  providers: [provideKawaiDefaults({ numberStepper: { label: { truncate: false } } })],
+  providers: [
+    provideKawaiDefaults({
+      label: { align: 'center', truncate: true },
+      numberStepper: { label: { truncate: false } },
+    }),
+  ],
   template: `
     <kawai-number-stepper
       id="plain"
@@ -20,7 +28,7 @@ import { NumberStepperComponent } from './number-stepper.component';
     />
     <kawai-number-stepper
       id="own"
-      [label]="{ text: 'Count', align: 'center' }"
+      [label]="{ text: 'Count', align: 'center', position: 'start' }"
       increaseLabel="More {label}"
       [value]="5"
       [min]="0"
@@ -57,17 +65,30 @@ describe('NumberStepperComponent', () => {
   it('resolves label options through app and local levels', () => {
     expect(label('plain').textContent.trim()).toBe('Quantity');
     expect(label('plain').style.textAlign).toBe('end'); // app level
-    expect(label('plain').classList).not.toContain('truncate'); // local level
+    expect(label('plain').classList).not.toContain('kawai-label-truncate'); // local level
+  });
+
+  it('lets the component key beat the shared label key, even from a farther level', async () => {
+    // App-level `numberStepper.label` wins over the local level's shared `label`.
+    expect(label('plain').style.textAlign).toBe('end');
+    appDefaults.set({});
+    await fixture.whenStable();
+    expect(label('plain').style.textAlign).toBe('center'); // shared key, once nothing beats it
   });
 
   it('lets the instance label options win', () => {
     expect(label('own').style.textAlign).toBe('center');
   });
 
+  it('puts the label on top by default and beside the field with position start', () => {
+    expect(stepper('plain').classList).not.toContain('label-start');
+    expect(stepper('own').classList).toContain('label-start');
+  });
+
   it('follows a signal default live', async () => {
     appDefaults.set({});
     await fixture.whenStable();
-    expect(label('plain').style.textAlign).toBe('start'); // library default
+    expect(label('plain').style.textAlign).toBe('center'); // next in the chain: the shared key
   });
 
   it('names the buttons from the label text and steps the value', async () => {

@@ -1,4 +1,7 @@
-import type { KawaiLabelDefaultsConfig, KawaiLabelOptions } from '../../shared/label/label.model';
+import type {
+  KawaiLabelDefaultsConfig,
+  KawaiLabelOptions,
+} from '../../directives/label/label.model';
 
 /** The stepper's configuration with every value filled in: the shape of its library defaults. */
 export interface NumberStepperDefaults {

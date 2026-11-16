@@ -39,7 +39,7 @@ const meta: Meta<Args> = {
     ...LABEL_ARG_TYPES,
     labelWidth: {
       description:
-        'Story only: `--kawai-comp-segmented-control-label-width`, e.g. `6rem`. Empty keeps the default (fits the text).',
+        'Story only: `--kawai-comp-segmented-control-label-width`, e.g. `6rem`, for `label.position: start`. Empty keeps the default (fits the text).',
     },
   },
   // The parent owns `value`; this story stores each emitted value, like an app would.
@@ -73,12 +73,25 @@ export const LongLabels: Story = {
   },
 };
 
-/** A label too long for its half of the row is truncated; the full text shows in a tooltip. */
+/** A label wider than the component is truncated; the full text shows in a tooltip. */
 export const LongLabel: Story = {
-  args: { labelText: 'Layout of the search results' },
+  args: { labelText: 'Layout of the search results on this page' },
 };
 
-/** With a fixed label width (a token), `label.align` aligns the text within it. */
+/** On top, the label spans the component, so `label.align` moves it across the full width. */
 export const AlignedLabel: Story = {
-  args: { labelWidth: '7rem', labelAlign: 'center' },
+  args: { labelAlign: 'center' },
+};
+
+/** `label.position: 'start'` puts the label beside the control, in the same line. */
+export const LabelAtStart: Story = {
+  args: { labelPosition: 'start' },
+};
+
+/**
+ * At the start, the label gets its own column. A fixed width (the label width token) lines up
+ * several controls, and `label.align` aligns the text within it.
+ */
+export const LabelAtStartAligned: Story = {
+  args: { labelPosition: 'start', labelWidth: '7rem', labelAlign: 'center' },
 };

@@ -25,6 +25,7 @@ export class App {
   protected readonly links: NavLink[] = [
     { path: 'accordion', label: 'Accordion' },
     { path: 'info-panel', label: 'Info panel' },
+    { path: 'label', label: 'Label' },
     { path: 'number-stepper', label: 'Number stepper' },
     { path: 'segmented-control', label: 'Segmented control' },
     { path: 'tooltip', label: 'Tooltip' },

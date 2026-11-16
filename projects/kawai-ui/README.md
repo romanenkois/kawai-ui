@@ -51,8 +51,8 @@ All tokens are prefixed by tier, so names never collide:
 The full list is exported as `KAWAI_TOKENS` with the `KawaiToken` type.
 
 The tokens sit in `@layer kawai`, so any normal rule in your app wins, whatever its selector
-or order. The only style rules in the stylesheet, `.kawai-tooltip` and the focus ring of
-truncated text (`[data-kawai-truncated]:focus-visible`), are unlayered so global resets don't
+or order. The only style rules in the stylesheet, `.kawai-tooltip`, the focus ring of
+truncated text (`[data-kawai-truncated]:focus-visible`) and `.kawai-label-truncate`, are unlayered so global resets don't
 strip them; override them with a rule at least as specific, loaded after the theme.
 
 ```css
@@ -124,6 +124,46 @@ Each value is resolved from the nearest place that sets it:
   Components update live.
 - Content such as heading or tooltip text is never a default.
 - The library defaults are exported per component, e.g. `KAWAI_ACCORDION_DEFAULTS`.
+
+### Labels
+
+`kawaiLabel` is the label every kawai-ui component uses, and you can put it on your own elements
+to label your controls the same way: one line with an ellipsis, the full text in a tooltip while
+it is cut off, and an alignment.
+
+```html
+<label kawaiLabel="Email" for="email"></label>
+<input id="email" />
+
+<span id="range" [kawaiLabel]="{ text: 'Range', align: 'end', truncate: false }"></span>
+```
+
+It takes the text or `KawaiLabelOptions` (`text`, `truncate`, `tooltip`, `align`, `position`) and writes the
+text into its host, replacing any content. The host stays your element, so `for`, `id` and
+`aria-labelledby` work as usual. Truncation makes the host `display: block` (the
+`.kawai-label-truncate` rule in the theme stylesheet), so give it a width or put it in a grid or
+flex column.
+
+Components that pair a label with a control (number stepper, segmented control) put it on top
+by default, across their full width, so `align` moves it left, centre or right over the control.
+`position: 'start'` puts it beside the control in the same line instead, in a column whose width
+is the `--kawai-comp-<component>-label-width` token. `position` has no effect on a bare
+`kawaiLabel`, which sits where you put it.
+
+The `label` key of `provideKawaiDefaults()` sets these options for every label and heading at
+once, `kawaiLabel` and component labels alike. A component's own key beats it:
+
+```ts
+provideKawaiDefaults({
+  label: { align: 'end' }, // every label and heading
+  accordion: { heading: { align: 'start' } }, // except accordion headings
+});
+```
+
+Labels resolve as **instance input → the component's own key (nearest level first) → the shared
+`label` key (nearest level first) → library defaults**. So a component key always wins over the
+shared key, even when the shared key is set at a nearer level: a route-level `label` doesn't
+change a component whose own key is set at the app level.
 
 ## Accessibility
 

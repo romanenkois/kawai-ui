@@ -1,4 +1,7 @@
-import type { KawaiLabelDefaultsConfig, KawaiLabelOptions } from '../../shared/label/label.model';
+import type {
+  KawaiLabelDefaultsConfig,
+  KawaiLabelOptions,
+} from '../../directives/label/label.model';
 
 /** One option of a segmented control. */
 export interface SegmentedOption<T extends string> {

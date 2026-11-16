@@ -36,14 +36,7 @@
         />
       </span>
     } @else {
-      <span
-        #label
-        class="label"
-        [class.truncate]="headingOptions().truncate"
-        [style.text-align]="headingOptions().align"
-        [kawaiTooltip]="labelTooltip()"
-        >{{ headingOptions().text }}</span
-      >
+      <span #label class="label" [kawaiLabel]="headingOptions()"></span>
     }
     @if (indicatorOptions(); as resolvedIndicator) {
       <span

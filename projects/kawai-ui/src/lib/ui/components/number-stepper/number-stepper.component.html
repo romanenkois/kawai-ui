@@ -1,11 +1,4 @@
-<label
-  class="label"
-  [for]="inputId"
-  [class.truncate]="labelOptions().truncate"
-  [style.text-align]="labelOptions().align"
-  [kawaiTooltip]="labelTooltip()"
-  >{{ labelOptions().text }}</label
->
+<label class="label" [for]="inputId" [kawaiLabel]="labelOptions()"></label>
 <div class="stepper">
   <button
     type="button"

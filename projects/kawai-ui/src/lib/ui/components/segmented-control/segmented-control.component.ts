@@ -10,11 +10,11 @@ import {
 } from '@angular/core';
 
 import { injectKawaiDefaults } from '../../../defaults/kawai-defaults';
-import { KawaiDeepPartial, resolveOptionsChain } from '../../../utils/options';
+import { KawaiDeepPartial } from '../../../utils/options';
+import { LabelDirective } from '../../directives/label/label.directive';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
-import { TooltipOptions } from '../../directives/tooltip/tooltip.model';
-import { KawaiLabelOptions } from '../../shared/label/label.model';
-import { labelTooltip } from '../../shared/label/label.util';
+import { KawaiLabelOptions } from '../../directives/label/label.model';
+import { resolveLabelChain } from '../../directives/label/label.util';
 import { KAWAI_SEGMENTED_CONTROL_DEFAULTS } from './segmented-control.constant';
 import { SegmentedOption } from './segmented-control.model';
 
@@ -25,13 +25,15 @@ let nextId = 0;
  * move the selection. Stateless: the parent owns `value` and reacts to `valueChange`; the
  * checked radio always follows `value`, also when the parent turns a change down.
  *
- * `label` takes the text or {@link KawaiLabelOptions}; options left out come from
+ * `label` takes the text or {@link KawaiLabelOptions} and sits above the options, or beside
+ * them with `position: 'start'`; options left out come from
  * `provideKawaiDefaults()` levels, then `KAWAI_SEGMENTED_CONTROL_DEFAULTS`. Option labels stay
  * on one line, with a tooltip on hover when truncated.
  */
 @Component({
   selector: 'kawai-segmented-control',
-  imports: [TooltipDirective],
+  host: { '[class.label-start]': "labelOptions().position === 'start'" },
+  imports: [LabelDirective, TooltipDirective],
   templateUrl: './segmented-control.component.html',
   styleUrl: './segmented-control.component.scss',
 })
@@ -44,15 +46,12 @@ export class SegmentedControlComponent<T extends string> {
 
   private readonly defaultLevels = injectKawaiDefaults();
   protected readonly labelOptions = computed<KawaiLabelOptions>(() =>
-    resolveOptionsChain(
-      [...this.defaultLevels().map((level) => level.segmentedControl?.label), this.label()],
+    resolveLabelChain(
+      this.defaultLevels(),
+      (level) => level.segmentedControl?.label,
+      this.label(),
       KAWAI_SEGMENTED_CONTROL_DEFAULTS.label,
-      'text',
     ),
-  );
-  /** Full-text tooltip for a truncated label. */
-  protected readonly labelTooltip = computed<KawaiDeepPartial<TooltipOptions> | null>(() =>
-    labelTooltip(this.labelOptions()),
   );
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);

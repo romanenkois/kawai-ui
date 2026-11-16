@@ -14,6 +14,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/info-panel-page').then((m) => m.InfoPanelPage),
   },
   {
+    path: 'label',
+    title: 'Label',
+    loadComponent: () => import('./pages/label-page').then((m) => m.LabelPage),
+  },
+  {
     path: 'number-stepper',
     title: 'Number stepper',
     loadComponent: () => import('./pages/number-stepper-page').then((m) => m.NumberStepperPage),

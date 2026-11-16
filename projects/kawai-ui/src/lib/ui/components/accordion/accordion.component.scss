@@ -101,12 +101,6 @@ button:focus-visible {
   min-inline-size: 0;
 }
 
-.label.truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 /* The chevron is decorative (state is in aria-expanded), so moving it with `order` is safe. */
 .indicator {
   display: inline-flex;

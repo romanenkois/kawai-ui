@@ -55,12 +55,12 @@ describe('SegmentedControlComponent', () => {
   });
 
   it('resolves label options from the app level', () => {
-    expect(label('plain').classList).not.toContain('truncate');
+    expect(label('plain').classList).not.toContain('kawai-label-truncate');
     expect(label('plain').style.textAlign).toBe('center');
   });
 
   it('lets instance options win field by field', () => {
-    expect(label('own').classList).toContain('truncate'); // instance
+    expect(label('own').classList).toContain('kawai-label-truncate'); // instance
     expect(label('own').style.textAlign).toBe('center'); // still the app level
   });
 

@@ -2,7 +2,7 @@ You are an expert in TypeScript, Angular, and component library development. You
 
 # Agent mode
 
-User is always here, always ask about anything that is not 100% clear, never just assume, ask as much question as needed to clarify all the potential cases of the dispatched work. If the question has some fundamental important decision, explain the pros and cons of each options, what are the potential pitfalls
+User is always here, always ask about anything that is not 100% clear, never just assume, ask as much question as needed to clarify all the potential cases of the dispatched work. How questions always call the tool, not just ask in plain text. If the question has some fundamental important decision, explain the pros and cons of each options, what are the potential pitfalls
 
 ## Project
 
@@ -10,7 +10,7 @@ kawai-ui is an Angular v22 component library, built with ng-packagr. The workspa
 
 - `src/lib/ui/components/<name>/`: components
 - `src/lib/ui/directives/<name>/`: directives
-- `src/lib/ui/shared/<name>/`: pieces several components share (e.g. `label/`: `KawaiLabelOptions`)
+- `src/lib/ui/shared/<name>/`: pieces several components share (e.g. `heading/`: `KawaiHeadingLevel`)
 - `src/lib/defaults/`: `provideKawaiDefaults()` and `KawaiDefaultsConfig`
 - `src/lib/utils/`: internal helpers such as `resolveOptionsChain()`
 - `src/lib/theme/tokens.ts`: the TypeScript list of every design token

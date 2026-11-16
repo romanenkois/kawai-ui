@@ -1,11 +1,4 @@
-<span
-  class="label"
-  [id]="labelId"
-  [class.truncate]="labelOptions().truncate"
-  [style.text-align]="labelOptions().align"
-  [kawaiTooltip]="labelTooltip()"
-  >{{ labelOptions().text }}</span
->
+<span class="label" [id]="labelId" [kawaiLabel]="labelOptions()"></span>
 <div class="options" role="radiogroup" [attr.aria-labelledby]="labelId">
   @for (option of options(); track option.value) {
     <label>

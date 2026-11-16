@@ -21,7 +21,7 @@ Each component lives in `src/lib/ui/components/<name>/`, each directive in `src/
 
 The parent barrel (`components/index.ts`, `directives/index.ts`) only re-exports the folders (`export * from './accordion';`), never individual files. A new public file goes in the folder's own `index.ts`.
 
-Pieces several components share go in `src/lib/ui/shared/<name>/` with the same model/constant split (e.g. `shared/label/`).
+Pieces several components share go in `src/lib/ui/shared/<name>/` with the same model/constant split (e.g. `shared/heading/`). Behaviour two directives share goes in an internal `<name>.controller.ts` next to the directive that owns it (`tooltip.controller.ts`, which `kawaiLabel` also uses); it isn't exported.
 
 **Why:** the same layout everywhere means every component can be read, reviewed and extended the same way, and types, values and behaviour never mix in one file.
 
@@ -75,7 +75,7 @@ readonly indicator = input<
 
 ### Labels and headings
 
-Every label or heading uses the shared `KawaiLabelOptions` from `src/lib/ui/shared/label/`:
+Every label or heading is rendered by the public `kawaiLabel` directive (`src/lib/ui/directives/label/`), which apps also put on their own elements. It takes `KawaiLabelOptions`:
 
 ```ts
 interface KawaiLabelOptions {
@@ -83,13 +83,15 @@ interface KawaiLabelOptions {
   truncate: boolean; // one line + ellipsis (default true)
   tooltip: KawaiDeepPartial<Pick<TooltipOptions, 'position'>> | null; // full text while truncated; null = none
   align: KawaiLabelAlign; // 'start' | 'center' | 'end' within the label's area
+  position: KawaiLabelPosition; // 'top' (default): above the control; 'start': beside it
 }
 ```
 
 - The input is `input.required<string | KawaiDeepPartial<KawaiLabelOptions>>()` (or optional when a template can replace it, as with the accordion heading).
-- Defaults: `KAWAI_LABEL_DEFAULTS` in the component's constant. Tooltip: `labelTooltip(resolvedLabel)` from `label.util.ts`. A tooltip position left out falls through to the tooltip defaults.
+- Defaults: `KAWAI_LABEL_DEFAULTS` in the component's constant. Resolve with `resolveLabelChain()` from `label.util.ts`, never `resolveOptionsChain()`: it also applies the shared `label` key (section 5).
+- Template: put `[kawaiLabel]="labelOptions()"` on the element the label really is (`<label [for]>`, a `<span [id]>` for `aria-labelledby`, a `<span>` inside a button). The directive writes the text, truncation (`.kawai-label-truncate`, a rule in `kawai-theme.css`), alignment and the full-text tooltip. The component keeps only its own styling of that element (color, width, flex). A tooltip position left out falls through to the tooltip defaults.
 - A component-specific label **extends** the type instead of redefining it.
-- When the label sits in a column, add a `--kawai-comp-<component>-label-width` token (default: fits the text), so `align` has an area to align within.
+- A component that pairs the label with a control lays it out from `position`: on `top` (the default) the label spans the component's full width above the control, so `align` moves it across that width; `start` puts it in a column beside the control, via a `[class.label-start]` host class. Give that column a `--kawai-comp-<component>-label-width` token (default: fits the text), so `align` has an area to align within. `position` does nothing on a bare `kawaiLabel` or a heading.
 - If the label text is the accessible name of a control, warn in dev mode when it resolves to empty:
 
   ```ts
@@ -127,6 +129,7 @@ Every configuration input resolves through one chain, nearest first:
 - **`null`** at any level turns an option off from there down; a nearer level can turn it back on (merging over the library defaults).
 - **Defaults that depend on the component's own content** (e.g. a custom indicator template isn't rotated) are applied to the library defaults inside the component, so any level can still override them.
 - **A value set on a data item wins over everything** (e.g. an info panel field's own `linksOverflow`), then the chain applies.
+- **Labels and headings have a shared key too:** `label` in `KawaiDefaultsConfig` applies to every `kawaiLabel`, component label and heading. A component's own key (`numberStepper.label`, `accordion.heading`) always beats it, whichever level either is set at: **instance input → component key, nearest level first → shared `label` key, nearest level first → library defaults**. `resolveLabelChain()` does this. It is the one exception to "the nearest level wins".
 
 **Why:** an app sets its look once, a feature overrides only what differs, an instance overrides one value, and nobody restates what they inherit.
 
@@ -207,7 +210,10 @@ A component `kawai-example` with a label and one plain configuration input, `den
 **`example.model.ts`**
 
 ```ts
-import type { KawaiLabelDefaultsConfig, KawaiLabelOptions } from '../../shared/label/label.model';
+import type {
+  KawaiLabelDefaultsConfig,
+  KawaiLabelOptions,
+} from '../../directives/label/label.model';
 
 /** How much space the example takes. */
 export type ExampleDensity = 'comfortable' | 'compact';
@@ -231,7 +237,7 @@ export interface ExampleDefaultsConfig {
 **`example.constant.ts`**
 
 ```ts
-import { KAWAI_LABEL_DEFAULTS } from '../../shared/label/label.constant';
+import { KAWAI_LABEL_DEFAULTS } from '../../directives/label/label.constant';
 import type { ExampleDefaults } from './example.model';
 
 /**
@@ -250,11 +256,10 @@ export const KAWAI_EXAMPLE_DEFAULTS: Readonly<ExampleDefaults> = {
 import { Component, computed, effect, input, isDevMode, output } from '@angular/core';
 
 import { injectKawaiDefaults } from '../../../defaults/kawai-defaults';
-import { KawaiDeepPartial, resolveOptionsChain, resolveValueChain } from '../../../utils/options';
-import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
-import { TooltipOptions } from '../../directives/tooltip/tooltip.model';
-import { KawaiLabelOptions } from '../../shared/label/label.model';
-import { labelTooltip } from '../../shared/label/label.util';
+import { KawaiDeepPartial, resolveValueChain } from '../../../utils/options';
+import { LabelDirective } from '../../directives/label/label.directive';
+import { KawaiLabelOptions } from '../../directives/label/label.model';
+import { resolveLabelChain } from '../../directives/label/label.util';
 import { KAWAI_EXAMPLE_DEFAULTS } from './example.constant';
 import { ExampleDensity } from './example.model';
 
@@ -267,8 +272,11 @@ let nextId = 0;
  */
 @Component({
   selector: 'kawai-example',
-  imports: [TooltipDirective],
-  host: { '[class.compact]': "densityValue() === 'compact'" },
+  imports: [LabelDirective],
+  host: {
+    '[class.compact]': "densityValue() === 'compact'",
+    '[class.label-start]': "labelOptions().position === 'start'",
+  },
   templateUrl: './example.component.html',
   styleUrl: './example.component.scss',
 })
@@ -282,14 +290,12 @@ export class ExampleComponent {
 
   private readonly defaultLevels = injectKawaiDefaults();
   protected readonly labelOptions = computed<KawaiLabelOptions>(() =>
-    resolveOptionsChain(
-      [...this.defaultLevels().map((level) => level.example?.label), this.label()],
+    resolveLabelChain(
+      this.defaultLevels(),
+      (level) => level.example?.label,
+      this.label(),
       KAWAI_EXAMPLE_DEFAULTS.label,
-      'text',
     ),
-  );
-  protected readonly labelTooltip = computed<KawaiDeepPartial<TooltipOptions> | null>(() =>
-    labelTooltip(this.labelOptions()),
   );
   protected readonly densityValue = computed<ExampleDensity>(() =>
     resolveValueChain(
@@ -314,14 +320,7 @@ export class ExampleComponent {
 **`example.component.html`**
 
 ```html
-<span
-  class="label"
-  [id]="labelId"
-  [class.truncate]="labelOptions().truncate"
-  [style.text-align]="labelOptions().align"
-  [kawaiTooltip]="labelTooltip()"
-  >{{ labelOptions().text }}</span
->
+<span class="label" [id]="labelId" [kawaiLabel]="labelOptions()"></span>
 ```
 
 **`example.component.scss`**
@@ -329,24 +328,25 @@ export class ExampleComponent {
 ```scss
 :host {
   display: grid;
-  grid-template-columns: var(--kawai-comp-example-label-width, fit-content(50%)) minmax(0, 1fr);
-  gap: 0 var(--kawai-comp-example-gap, var(--kawai-sys-space-lg));
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--kawai-comp-example-gap, var(--kawai-sys-space-xs));
   font-family: var(--kawai-sys-font-family);
 }
 
-:host(.compact) {
+/* `label.position: 'start'`: the label in its own column, beside the control. */
+:host(.label-start) {
+  grid-template-columns: var(--kawai-comp-example-label-width, fit-content(50%)) minmax(0, 1fr);
+  gap: 0 var(--kawai-comp-example-gap, var(--kawai-sys-space-lg));
+  align-items: center;
+}
+
+:host(.label-start.compact) {
   gap: 0 var(--kawai-comp-example-gap, var(--kawai-sys-space-sm));
 }
 
 .label {
   min-inline-size: 0;
   color: var(--kawai-comp-example-label-color, var(--kawai-sys-color-text-muted));
-}
-
-.label.truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 ```
 
@@ -388,7 +388,9 @@ describe('ExampleComponent', () => {
 
   it('merges app and local levels', () => {
     expect(example('plain').classList).toContain('compact'); // app level
-    expect(example('plain').querySelector('.label')?.classList).not.toContain('truncate'); // local
+    expect(example('plain').querySelector('.label')?.classList).not.toContain(
+      'kawai-label-truncate',
+    ); // local
   });
 
   it('lets instance inputs win', () => {

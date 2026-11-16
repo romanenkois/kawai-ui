@@ -1,4 +1,4 @@
-import { KAWAI_LABEL_DEFAULTS } from '../../shared/label/label.constant';
+import { KAWAI_LABEL_DEFAULTS } from '../../directives/label/label.constant';
 import type { NumberStepperDefaults } from './number-stepper.model';
 
 /**

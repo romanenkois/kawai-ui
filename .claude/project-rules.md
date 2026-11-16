@@ -34,7 +34,7 @@ Component styling is in the component guide; these rules are about the theme its
 - `--kawai-sys-font-family` is deliberately undeclared, so components inherit the app font.
 - The library never picks a theme. Apps set `kawai-theme="light|dark|auto"`. Only `[kawai-theme='auto']` may read `prefers-color-scheme`.
 - Dark sys values appear twice in `kawai-theme.css`: in `[kawai-theme='dark']` and in the `auto` media query. Change both together.
-- Tokens in `kawai-theme.css` stay inside `@layer kawai`, so app overrides always win. Style rules there (only for what component styles can't reach: `.kawai-tooltip`, rendered outside components, and the focus ring of text `kawaiTooltip` made a tab stop) go unlayered after the layer, so global resets in the app can't strip them.
+- Tokens in `kawai-theme.css` stay inside `@layer kawai`, so app overrides always win. Style rules there (only for what component styles can't reach: `.kawai-tooltip`, rendered outside components, the focus ring of text `kawaiTooltip` made a tab stop, and `.kawai-label-truncate`, since apps put `kawaiLabel` on their own elements) go unlayered after the layer, so global resets in the app can't strip them.
 
 ## Accessibility Requirements
 

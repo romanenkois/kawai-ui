@@ -4,6 +4,7 @@ import type {
   KawaiDeepPartial,
   KawaiLabelAlign,
   KawaiLabelOptions,
+  KawaiLabelPosition,
   TooltipPosition,
 } from '../../src/public-api';
 
@@ -17,6 +18,7 @@ export interface LabelArgs {
   labelTruncate: boolean;
   labelTooltipPosition: TooltipPosition | 'none';
   labelAlign: KawaiLabelAlign;
+  labelPosition: KawaiLabelPosition;
 }
 
 export const LABEL_ARGS: LabelArgs = {
@@ -24,6 +26,7 @@ export const LABEL_ARGS: LabelArgs = {
   labelTruncate: true,
   labelTooltipPosition: 'bottom',
   labelAlign: 'start',
+  labelPosition: 'top',
 };
 
 export const LABEL_ARG_TYPES: Partial<ArgTypes<LabelArgs>> = {
@@ -35,9 +38,15 @@ export const LABEL_ARG_TYPES: Partial<ArgTypes<LabelArgs>> = {
     options: ['top', 'bottom', 'left', 'right', 'none'],
   },
   labelAlign: {
-    description: '`label.align` within the label area (see the label width token).',
+    description:
+      '`label.align` within the label area: the full width on top, the label column at the start.',
     control: 'inline-radio',
     options: ['start', 'center', 'end'],
+  },
+  labelPosition: {
+    description: '`label.position`: above the control, or beside it in the same line.',
+    control: 'inline-radio',
+    options: ['top', 'start'],
   },
 };
 
@@ -48,5 +57,6 @@ export function labelOptions(args: LabelArgs): KawaiDeepPartial<KawaiLabelOption
     truncate: args.labelTruncate,
     tooltip: args.labelTooltipPosition === 'none' ? null : { position: args.labelTooltipPosition },
     align: args.labelAlign,
+    position: args.labelPosition,
   };
 }

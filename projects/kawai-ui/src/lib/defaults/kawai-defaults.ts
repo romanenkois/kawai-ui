@@ -12,6 +12,7 @@ import type { AccordionDefaultsConfig } from '../ui/components/accordion/accordi
 import type { InfoPanelDefaultsConfig } from '../ui/components/info-panel/info-panel.model';
 import type { NumberStepperDefaultsConfig } from '../ui/components/number-stepper/number-stepper.model';
 import type { SegmentedControlDefaultsConfig } from '../ui/components/segmented-control/segmented-control.model';
+import type { KawaiLabelDefaultsConfig } from '../ui/directives/label/label.model';
 import type { TooltipDefaultsConfig } from '../ui/directives/tooltip/tooltip.model';
 
 /**
@@ -21,6 +22,12 @@ import type { TooltipDefaultsConfig } from '../ui/directives/tooltip/tooltip.mod
 export interface KawaiDefaultsConfig {
   accordion?: AccordionDefaultsConfig;
   infoPanel?: InfoPanelDefaultsConfig;
+  /**
+   * Every label and heading: `kawaiLabel`, component labels and the accordion heading. A
+   * component's own key (`numberStepper.label`, `accordion.heading`) beats this one, whichever
+   * level either is set at.
+   */
+  label?: KawaiLabelDefaultsConfig;
   numberStepper?: NumberStepperDefaultsConfig;
   segmentedControl?: SegmentedControlDefaultsConfig;
   tooltip?: TooltipDefaultsConfig;

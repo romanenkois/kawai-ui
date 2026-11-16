@@ -3,7 +3,7 @@
   <span class="mode" title="Which kawai-ui this build imports">{{ mode }}</span>
   <kawai-segmented-control
     class="theme"
-    label="Theme"
+    [label]="{ text: 'Theme', position: 'start' }"
     [options]="themes"
     [value]="theme()"
     (valueChange)="theme.set($event)"

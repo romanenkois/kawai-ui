@@ -173,3 +173,18 @@
     var(--kawai-comp-tooltip-focus-ring-color, var(--kawai-sys-color-primary));
   outline-offset: calc(-1 * var(--kawai-sys-focus-ring-width));
 }
+
+/*
+ * A truncating `kawaiLabel`: one line, cut off with an ellipsis (the directive shows the full
+ * text in a tooltip). Here and not in component styles because apps put `kawaiLabel` on their
+ * own elements too. `display: block` lets an inline host (`label`, `span`) clip; as a flex or
+ * grid item it changes nothing, and `min-inline-size: 0` lets such an item shrink below its
+ * text.
+ */
+.kawai-label-truncate {
+  display: block;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
