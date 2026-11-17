@@ -26,6 +26,7 @@
     "check:theme": "node scripts/check-theme.mjs",
     "test:a11y": "npm run build-storybook && node scripts/test-a11y.mjs",
     "test:pack": "node scripts/test-pack.mjs",
+    "release": "npm run lint && npm test -- --watch=false && npm run check:theme && npm run test:a11y && npm run test:pack && npm publish ./dist/kawai-ui",
     "storybook": "cross-env NODE_ENV=development ng run kawai-ui:storybook",
     "build-storybook": "ng run kawai-ui:build-storybook",
     "lint": "ng lint"

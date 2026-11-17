@@ -1,6 +1,24 @@
 {
   "name": "kawai-ui",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "description": "Accessible, themable Angular components built on signals and CSS design tokens.",
+  "keywords": [
+    "angular",
+    "ui library",
+    "component",
+    "components"
+  ],
+  "license": "Apache-2.0",
+  "author": "Romanenko Illia <romanenkoisnot@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/romanenkois/kawai-ui.git",
+    "directory": "projects/kawai-ui"
+  },
+  "homepage": "https://romanenkois.github.io/kawai-ui/",
+  "scripts": {
+    "prepublishOnly": "node -e \"console.error('This is the kawai-ui source. Publish the build with npm run release at the workspace root.'); process.exit(1)\""
+  },
   "peerDependencies": {
     "@angular/common": "^22.2.0",
     "@angular/core": "^22.2.0"

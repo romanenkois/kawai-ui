@@ -2,7 +2,8 @@
 // installs the tarball into a throwaway copy of the playground outside this workspace, and
 // builds that app. Unlike the playground's `source` and `built` modes (tsconfig path mappings),
 // this goes through node_modules, so it tests the package's `exports`, its peer dependencies
-// and the files that really ship. Needs network for `npm install`; takes a few minutes.
+// and the files that really ship, the license included. Needs network for `npm install`; takes
+// a few minutes.
 //
 // `npm run test:pack` removes the temp folder when it passes and keeps it when it fails.
 // `npm run test:pack -- --keep` always keeps it.
@@ -22,6 +23,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const ROOT = join(import.meta.dirname, '..');
+const LIB = join(ROOT, 'projects/kawai-ui');
+const DIST = join(ROOT, 'dist/kawai-ui');
 const PLAYGROUND = join(ROOT, 'projects/playground');
 const KEEP = process.argv.includes('--keep');
 /** What the consumer app needs to build, taken from this workspace so the versions match. */
@@ -57,10 +60,36 @@ function writeJson(path, value) {
   writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`);
 }
 
+const workspace = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
+
 run('Build the library', 'npx', ['ng', 'build', 'kawai-ui'], ROOT);
-run('Pack it', 'npm', ['pack', '--pack-destination', temp], join(ROOT, 'dist/kawai-ui'));
+
+console.log('\n▸ Pack it');
+const pack = spawnSync('npm', ['pack', '--json', '--pack-destination', temp], {
+  cwd: DIST,
+  encoding: 'utf8',
+  stdio: ['ignore', 'pipe', 'inherit'],
+  shell: process.platform === 'win32',
+});
+if (pack.status !== 0) fail('Pack it failed.');
+/** @type {{ files: { path: string }[] }[]} */
+const [packed] = JSON.parse(pack.stdout);
 const tarball = readdirSync(temp).find((file) => file.endsWith('.tgz'));
-if (!tarball) fail('npm pack produced no tarball.');
+if (!packed || !tarball) fail('npm pack produced no tarball.');
+
+// The license has to ship. GitHub reads the root LICENSE.txt; ng-packagr only copies a file named
+// LICENSE from the library folder, so projects/kawai-ui/LICENSE is a copy that must match it.
+console.log('\n▸ Check the license ships');
+if (
+  readFileSync(join(LIB, 'LICENSE'), 'utf8') !== readFileSync(join(ROOT, 'LICENSE.txt'), 'utf8')
+) {
+  fail('projects/kawai-ui/LICENSE differs from LICENSE.txt. Copy LICENSE.txt over it.');
+}
+if (!packed.files.some((file) => file.path === 'LICENSE')) fail('The tarball has no LICENSE.');
+const { license } = JSON.parse(readFileSync(join(DIST, 'package.json'), 'utf8'));
+if (license !== workspace.license) {
+  fail(`The packed package.json has license ${license}, expected ${workspace.license}.`);
+}
 
 console.log(`\n▸ Create the consumer app in ${app}`);
 mkdirSync(app);
@@ -69,7 +98,6 @@ cpSync(join(PLAYGROUND, 'public'), join(app, 'public'), { recursive: true });
 // The import the library README tells apps to write; it resolves through the package `exports`.
 writeFileSync(join(app, 'src/kawai-theme.css'), "@import 'kawai-ui/styles/kawai-theme.css';\n");
 
-const workspace = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
 writeJson(join(app, 'package.json'), {
   name: 'kawai-ui-pack-check',
   private: true,

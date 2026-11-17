@@ -28,6 +28,8 @@ The second project, `playground` in `projects/playground`, is a sandbox app with
 
 Everything public goes through the `index.ts` barrels into `src/public-api.ts`. Export every new public symbol there.
 
+Releases go through `npm run release` at the root: every check below plus `test:pack`, then `npm publish ./dist/kawai-ui` (`npm run release -- --dry-run` to try it). Never publish from `projects/kawai-ui`: that is the source, and its `prepublishOnly` refuses. `projects/kawai-ui/README.md` is the npm page; repo-only notes go in the root `README.md`. `.github/workflows/ci.yml` runs the checks on every push and pull request and deploys Storybook to GitHub Pages from `master`; keep it in step when scripts change.
+
 Project-wide rules (TypeScript, Angular, theme, accessibility, Storybook):
 
 @.claude/project-rules.md
@@ -45,7 +47,7 @@ Run whichever of these the change touches. All must pass:
 - `npm run check:theme`: token list in sync with usage; built-in palettes pass WCAG AA contrast
 - `ng build kawai-ui`: library build
 - `npm run build:playground`: when the public API or the playground changed. The playground must compile; it isn't linted or tested
-- `npm run test:pack`: before a release, or when `package.json`, `ng-package.json`, `exports` or the shipped styles changed. Packs the built library, installs the tarball into a temp app outside the workspace and builds it (needs network, takes a few minutes)
+- `npm run test:pack`: before a release, or when `package.json`, `ng-package.json`, `exports` or the shipped styles changed. Packs the built library, checks the license ships (`projects/kawai-ui/LICENSE` is a copy of the root `LICENSE.txt` and must match it), installs the tarball into a temp app outside the workspace and builds it (needs network, takes a few minutes)
 - `npm run build-storybook`: when components, stories or tokens changed
 - `npm run test:a11y`: when components, stories or tokens changed. Builds Storybook itself, then runs axe on every story in a real browser, in light and dark (first time: `npx playwright install chromium-headless-shell`)
 

@@ -1,4 +1,66 @@
-# KawaiUi
+# kawai-ui
+
+Accessible, themable Angular components built on signals and CSS design tokens.
+
+**[Live demos and API docs (Storybook)](https://romanenkois.github.io/kawai-ui/)**
+
+## Install
+
+```bash
+npm install kawai-ui
+```
+
+Needs Angular 22.2 or later (`@angular/core` and `@angular/common`).
+
+## Quick start
+
+1. Add the theme stylesheet to your app (details in [Theming](#theming)):
+
+   ```jsonc
+   // angular.json → projects.<app>.architect.build.options
+   "styles": ["node_modules/kawai-ui/styles/kawai-theme.css", "src/styles.css"]
+   ```
+
+2. Import a component and use it:
+
+   ```ts
+   import { Component, signal } from '@angular/core';
+   import { AccordionBodyDirective, AccordionComponent } from 'kawai-ui';
+
+   @Component({
+     selector: 'app-faq',
+     imports: [AccordionComponent, AccordionBodyDirective],
+     template: `
+       <kawai-accordion heading="Shipping" [expanded]="open()" (toggled)="open.set(!open())">
+         <ng-template kawaiAccordionBody>Orders ship within two days.</ng-template>
+       </kawai-accordion>
+     `,
+   })
+   export class Faq {
+     protected readonly open = signal<boolean>(false);
+   }
+   ```
+
+Components are stateless: your app owns the state (`expanded`, `value`) and updates it from
+their events (`toggled`, `valueChange`).
+
+## Components and directives
+
+| Name              | Selector                  | What it is                                                              |
+| ----------------- | ------------------------- | ----------------------------------------------------------------------- |
+| Accordion         | `kawai-accordion`         | [Collapsible section with a header button][accordion]                   |
+| Info panel        | `kawai-info-panel`        | [Titles, text, label/value fields, tables and buttons from data][info]  |
+| Number stepper    | `kawai-number-stepper`    | [Labelled whole-number field with − and + buttons][stepper]             |
+| Segmented control | `kawai-segmented-control` | [Row of mutually exclusive options on native radios][segmented]         |
+| Label             | `kawaiLabel`              | [The one-line label every component uses, for your own controls][label] |
+| Tooltip           | `kawaiTooltip`            | [Plain-text tooltip on hover and keyboard focus][tooltip]               |
+
+[accordion]: https://romanenkois.github.io/kawai-ui/?path=/docs/components-accordion--docs
+[info]: https://romanenkois.github.io/kawai-ui/?path=/docs/components-info-panel--docs
+[stepper]: https://romanenkois.github.io/kawai-ui/?path=/docs/components-number-stepper--docs
+[segmented]: https://romanenkois.github.io/kawai-ui/?path=/docs/components-segmented-control--docs
+[label]: https://romanenkois.github.io/kawai-ui/?path=/docs/directives-label--docs
+[tooltip]: https://romanenkois.github.io/kawai-ui/?path=/docs/directives-tooltip--docs
 
 ## Theming
 
@@ -93,10 +155,8 @@ layer, so they need no z-index) and copy the nearest `kawai-theme` value, but th
 tokens set by other selectors on their host's ancestors.
 
 Custom themes are responsible for their own contrast: text colors need 4.5:1 against the
-surface colors, borders and focus rings 3:1. `npm run check:theme` in this repo checks the
-built-in palettes.
-
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.0.
+surface colors, borders and focus rings 3:1. The built-in palettes are checked against these
+ratios.
 
 ## Defaults
 
@@ -186,67 +246,6 @@ change a component whose own key is set at the app level.
   });
   ```
 
-In this repo, `npm test` runs axe on every component in jsdom, and `npm run test:a11y` builds
-Storybook and runs axe on every story in a real browser, in the light and the dark theme. The
-first time, download the browser with `npx playwright install chromium-headless-shell`.
+## License
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the library, run:
-
-```bash
-ng build kawai-ui
-```
-
-This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
-
-### Publishing the Library
-
-Once the project is built, you can publish your library by following these steps:
-
-1. Navigate to the `dist` directory:
-
-   ```bash
-   cd dist/kawai-ui
-   ```
-
-2. Run the `npm publish` command to publish your library to the npm registry:
-   ```bash
-   npm publish
-   ```
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+[Apache-2.0](https://github.com/romanenkois/kawai-ui/blob/master/LICENSE.txt)
