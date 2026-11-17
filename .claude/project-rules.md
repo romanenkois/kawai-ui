@@ -42,6 +42,12 @@ Component styling is in the component guide; these rules are about the theme its
 - It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
 - Text tokens need 4.5:1 contrast against the surface tokens, and borders and focus rings 3:1. Any palette change must pass `check:theme`.
 
+## Playground
+
+- `projects/playground` imports the library only as `'kawai-ui'`, never by relative path, so it runs unchanged against the source, the built `dist/kawai-ui` and the packed tarball.
+- It is a sandbox: ESLint ignores it and it has no tests, but it must build (`npm run build:playground`).
+- A change to `package.json`, `ng-package.json`, the package `exports` or the shipped stylesheet is checked with `npm run test:pack`, the only check that installs the library the way an app does.
+
 ## Storybook
 
 - Keep every Storybook package on the same version, `eslint-plugin-storybook` included

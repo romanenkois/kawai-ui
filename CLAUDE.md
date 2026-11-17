@@ -6,18 +6,25 @@ User is always here, always ask about anything that is not 100% clear, never jus
 
 ## Project
 
-kawai-ui is an Angular v22 component library, built with ng-packagr. The workspace has one project, `kawai-ui`, in `projects/kawai-ui`:
+kawai-ui is an Angular v22 component library, built with ng-packagr. The workspace has two projects. The library, `kawai-ui`, is in `projects/kawai-ui`:
 
 - `src/lib/ui/components/<name>/`: components
-- `src/lib/ui/directives/<name>/`: directives
+- `src/lib/ui/directives/<name>/`: directives (`tooltip/`: `kawaiTooltip`; `label/`: `kawaiLabel`, which renders every component label and heading and is also public for apps)
 - `src/lib/ui/shared/<name>/`: pieces several components share (e.g. `heading/`: `KawaiHeadingLevel`)
-- `src/lib/defaults/`: `provideKawaiDefaults()` and `KawaiDefaultsConfig`
+- `src/lib/defaults/`: `provideKawaiDefaults()` and `KawaiDefaultsConfig` (one key per component, plus the shared `label` key for every label and heading)
 - `src/lib/utils/`: internal helpers such as `resolveOptionsChain()`
 - `src/lib/theme/tokens.ts`: the TypeScript list of every design token
 - `styles/kawai-theme.css`: the theme stylesheet, shipped as `kawai-ui/styles/kawai-theme.css`
 - `stories/`: Storybook stories (not shipped). Config is in `.storybook/`.
 
-A second project, `playground` in `projects/playground`, is a sandbox app with one page per component (not shipped, not linted, no tests). It imports only from `'kawai-ui'`, never by relative path, so the same code runs against the library source (default), the built `dist/kawai-ui` (`--configuration built`) or the packed tarball (`npm run test:pack`). A new component gets a page in `src/app/pages/`, a route in `app.routes.ts` and a nav link in `app.ts`.
+The second project, `playground` in `projects/playground`, is a sandbox app with one page per component and public directive. It is not shipped, not linted (`projects/playground/` is in the ESLint ignores) and has no tests; it only has to build.
+
+- It imports only from `'kawai-ui'`, never by relative path. The build mode decides what that is, and the badge in its header (`KAWAI_UI_MODE`) shows it:
+  - `source` (default, `npm start`): the library source, through the path mapping in `tsconfig.app.json`
+  - `built` (`npm run start:built`, or `--configuration built`): `dist/kawai-ui`, through `tsconfig.app.built.json`; needs the library built first
+  - `packed` (`npm run test:pack`): the `npm pack` tarball installed into a temp app outside the workspace by `scripts/test-pack.mjs`
+- A new component or public directive gets a page in `src/app/pages/`, a route in `app.routes.ts` and a nav link in `app.ts`.
+- The theme stylesheet is added per mode in `angular.json` (`styles`), not imported in `styles.scss`.
 
 Everything public goes through the `index.ts` barrels into `src/public-api.ts`. Export every new public symbol there.
 
